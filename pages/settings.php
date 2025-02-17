@@ -44,14 +44,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $_SESSION['flash'] = 'Settings updated successfully';
         $_SESSION['flash_type'] = 'success';
-        header('Location: ' . $_SERVER['PHP_SELF']);
+        header('Location: /settings');
         exit;
     } catch (PDOException $e) {
         // Rollback transaction
         $db->rollBack();
         $_SESSION['flash'] = 'Failed to update settings: ' . $e->getMessage();
         $_SESSION['flash_type'] = 'error';
-        header('Location: ' . $_SERVER['PHP_SELF']);
+        header('Location: /settings');
         exit;
     }
 }
@@ -179,7 +179,7 @@ require_once 'header.php';
                 </div>
 
                 <div class="flex justify-end space-x-4">
-                    <a href="/dashboard.php" class="btn-secondary">
+                    <a href="/dashboard" class="btn-secondary">
                         Cancel
                     </a>
                     <button type="submit" class="btn-primary">
