@@ -127,6 +127,9 @@ if (isset($video) && $current_page === 'player') {
                         Streamline your gdrive video content and management with our platform. 
                         Upload, manage, and share your videos with ease.
                     </p>
+                    <p class="text-xl text-gray-300 mb-8">
+                        For DMCA Takedown Mail to <span class="font-bold">report@nxshare.top</span>
+                    </p>
                     <div class="flex space-x-4">
                         <?php if (!isLoggedIn()): ?>
                             <a href="/register" class="btn bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 focus:ring-4 focus:ring-violet-300 focus:ring-opacity-50 focus:outline-none focus:ring-offset-2 focus:ring-offset-violet-200 py-2.5 px-5 rounded-lg text-base font-semibold text-white shadow-lg transition duration-200 ease-in-out">
