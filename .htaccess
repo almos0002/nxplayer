@@ -5,3 +5,6 @@ RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [QSA,L]
+
+RewriteRule ^users$ pages/users.php [L]
+RewriteRule ^user-edit$ pages/user-edit.php [L,QSA]

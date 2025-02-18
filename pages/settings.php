@@ -91,21 +91,9 @@ unset($_SESSION['flash_message']);
             </div>
 
             <?php if ($flash_message): ?>
-                <div id="flash-message" class="<?php echo $flash_message['type'] === 'error' ? 'bg-red-900/50 border-red-500 text-red-200' : 'bg-green-900/50 border-green-500 text-green-200'; ?> border px-4 py-3 rounded-lg mb-6">
+                <div class="<?php echo $flash_message['type'] === 'error' ? 'bg-red-900/50 border-red-500 text-red-200' : 'bg-green-900/50 border-green-500 text-green-200'; ?> border px-4 py-3 rounded-lg mb-6">
                     <?php echo htmlspecialchars($flash_message['text']); ?>
                 </div>
-                <script>
-                    setTimeout(() => {
-                        const flashMessage = document.getElementById('flash-message');
-                        if (flashMessage) {
-                            flashMessage.style.transition = 'opacity 0.5s ease-out';
-                            flashMessage.style.opacity = '0';
-                            setTimeout(() => {
-                                flashMessage.remove();
-                            }, 500);
-                        }
-                    }, 5000);
-                </script>
             <?php endif; ?>
 
             <form method="POST" class="space-y-6">

@@ -6,7 +6,7 @@ require_once 'router.php';
 $public_routes = ['/login.php', '/register.php', '/login', '/register', '/:slug'];
 
 // Protected route prefixes (require auth)
-$protected_routes = ['/dashboard', '/settings', '/edit', '/api.php'];
+$protected_routes = ['/dashboard', '/settings', '/edit', '/api.php', '/users', '/user-edit', '/add-user'];
 
 // Check if the current route requires authentication
 $current_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -104,6 +104,42 @@ $router->post('/edit', function() {
     global $db;
     requireLogin();
     require 'pages/edit.php';
+});
+
+$router->get('/users', function() {
+    global $db;
+    requireLogin();
+    require 'pages/users.php';
+});
+
+$router->post('/users', function() {
+    global $db;
+    requireLogin();
+    require 'pages/users.php';
+});
+
+$router->get('/user-edit', function() {
+    global $db;
+    requireLogin();
+    require 'pages/user-edit.php';
+});
+
+$router->post('/user-edit', function() {
+    global $db;
+    requireLogin();
+    require 'pages/user-edit.php';
+});
+
+$router->get('/add-user', function() {
+    global $db;
+    requireLogin();
+    require 'pages/add-user.php';
+});
+
+$router->post('/add-user', function() {
+    global $db;
+    requireLogin();
+    require 'pages/add-user.php';
 });
 
 // Video player route

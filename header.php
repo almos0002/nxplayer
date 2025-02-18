@@ -135,12 +135,18 @@ if (isset($video) && $current_page === 'player') {
                     <a href="/dashboard" class="text-primary font-bold text-xl"><?php echo htmlspecialchars($site_title); ?></a>
                     <div class="hidden md:block">
                         <div class="ml-10 flex items-baseline space-x-4">
-                            <a href="/dashboard" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/dashboard') !== false ? 'text-white bg-primary/10' : ''; ?>">
-                                <i class="fas fa-video mr-2"></i>Dashboard
-                            </a>
-                            <a href="/settings" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/settings') !== false ? 'text-white bg-primary/10' : ''; ?>">
-                                <i class="fas fa-cog mr-2"></i>Settings
-                            </a>
+                            <a href="/dashboard" class="<?php echo strpos($_SERVER['REQUEST_URI'], '/dashboard') !== false ? 'text-white font-semibold' : 'text-gray-300 hover:text-white'; ?>">Dashboard</a>
+                            <?php
+                            // Check if user is admin
+                            $stmt = $db->prepare("SELECT role FROM users WHERE id = ?");
+                            $stmt->execute([$_SESSION['user_id']]);
+                            $userRole = $stmt->fetchColumn();
+                            
+                            if ($userRole === 'admin'): 
+                            ?>
+                                <a href="/users" class="<?php echo strpos($_SERVER['REQUEST_URI'], '/users') !== false ? 'text-white font-semibold' : 'text-gray-300 hover:text-white'; ?>">Users</a>
+                            <?php endif; ?>
+                            <a href="/settings" class="<?php echo strpos($_SERVER['REQUEST_URI'], '/settings') !== false ? 'text-white font-semibold' : 'text-gray-300 hover:text-white'; ?>">Settings</a>
                         </div>
                     </div>
                 </div>
