@@ -38,6 +38,23 @@ try {
     die("Table creation failed: " . $e->getMessage());
 }
 
+// Create remember_tokens table if not exists
+$sql = "CREATE TABLE IF NOT EXISTS remember_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(64) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_token (token)
+)";
+
+try {
+    $db->exec($sql);
+} catch(PDOException $e) {
+    die("Table creation failed: " . $e->getMessage());
+}
+
 // Create videos table if not exists
 $sql = "CREATE TABLE IF NOT EXISTS videos (
     id INT AUTO_INCREMENT PRIMARY KEY,

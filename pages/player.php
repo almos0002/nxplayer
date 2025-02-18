@@ -2,9 +2,11 @@
 // Get site settings
 $site_settings = null;
 try {
-    $stmt = $db->prepare("SELECT * FROM site_settings WHERE user_id = ? ORDER BY id DESC LIMIT 1");
-    $stmt->execute([$_SESSION['user_id']]);
-    $site_settings = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (isset($_SESSION['user_id'])) {
+        $stmt = $db->prepare("SELECT * FROM site_settings WHERE user_id = ? ORDER BY id DESC LIMIT 1");
+        $stmt->execute([$_SESSION['user_id']]);
+        $site_settings = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 } catch (PDOException $e) {
     // Silently fail, use defaults
 }
