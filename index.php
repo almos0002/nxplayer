@@ -3,11 +3,22 @@ require_once 'config.php';
 require_once 'router.php';
 
 // Public routes (no auth required)
-$public_routes = ['/login.php', '/register.php', '/login', '/register'];
+$public_routes = ['/login.php', '/register.php', '/login', '/register', '/:slug'];
+
+// Protected route prefixes (require auth)
+$protected_routes = ['/dashboard', '/settings', '/edit', '/api.php'];
 
 // Check if the current route requires authentication
 $current_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-if (!in_array($current_path, $public_routes) && !isLoggedIn()) {
+$requires_auth = false;
+foreach ($protected_routes as $route) {
+    if (strpos($current_path, $route) === 0) {
+        $requires_auth = true;
+        break;
+    }
+}
+
+if ($requires_auth && !isLoggedIn()) {
     header('Location: /login');
     exit;
 }
@@ -95,14 +106,13 @@ $router->post('/edit', function() {
     require 'pages/edit.php';
 });
 
-// Video player route (requires auth)
+// Video player route
 $router->get('/:slug', function($params) {
     global $db;
-    requireLogin();
     
     $slug = $params['slug'];
-    $stmt = $db->prepare("SELECT * FROM videos WHERE slug = ? AND user_id = ?");
-    $stmt->execute([$slug, $_SESSION['user_id']]);
+    $stmt = $db->prepare("SELECT * FROM videos WHERE slug = ?");
+    $stmt->execute([$slug]);
     $video = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$video) {

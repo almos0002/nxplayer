@@ -1,12 +1,6 @@
 <?php
 require_once 'config.php';
 
-// Check authentication
-if (!isLoggedIn()) {
-    http_response_code(401);
-    die(json_encode(['status' => 'error', 'message' => 'Unauthorized']));
-}
-
 // Set CORS headers
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -37,10 +31,10 @@ try {
         SELECT v.*, vs.ad_url, vs.domains 
         FROM videos v 
         LEFT JOIN video_settings vs ON 1=1 
-        WHERE v.slug = ? AND v.user_id = ?
+        WHERE v.slug = ?
         LIMIT 1
     ");
-    $stmt->execute([$slug, $_SESSION['user_id']]);
+    $stmt->execute([$slug]);
     $video = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$video) {
@@ -49,8 +43,8 @@ try {
     }
 
     // Get the latest video settings
-    $stmt = $db->prepare("SELECT * FROM video_settings WHERE user_id = ? ORDER BY id DESC LIMIT 1");
-    $stmt->execute([$_SESSION['user_id']]);
+    $stmt = $db->prepare("SELECT * FROM video_settings ORDER BY id DESC LIMIT 1");
+    $stmt->execute();
     $settings = $stmt->fetch(PDO::FETCH_ASSOC);
 
     $response = [
