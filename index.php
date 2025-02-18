@@ -3,7 +3,7 @@ require_once 'config.php';
 require_once 'router.php';
 
 // Public routes (no auth required)
-$public_routes = ['/login.php', '/register.php', '/login', '/register', '/:slug'];
+$public_routes = ['/login.php', '/register.php', '/login', '/register', '/:slug', '/home'];
 
 // Protected route prefixes (require auth)
 $protected_routes = ['/dashboard', '/settings', '/edit', '/api.php', '/users', '/user-edit', '/add-user'];
@@ -30,12 +30,13 @@ $router = new Router();
 
 // Define routes
 $router->get('/', function() {
-    if (!isLoggedIn()) {
-        header('Location: /login');
-    } else {
-        header('Location: /dashboard');
-    }
-    exit;
+    global $db;
+    require 'pages/home.php';
+});
+
+$router->get('/home', function() {
+    global $db;
+    require 'pages/home.php';
 });
 
 // Auth routes
