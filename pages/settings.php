@@ -1,5 +1,5 @@
 <?php
-require_once '../config.php';
+require_once __DIR__ . '/../config.php';
 requireLogin();
 
 // Get current user's role
@@ -12,8 +12,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($userRole === 'admin') {
         // Admin-only settings
         if (isset($_POST['site_title'])) {
-            $stmt = $db->prepare("UPDATE site_settings SET value = ? WHERE setting = 'site_title'");
-            $stmt->execute([$_POST['site_title']]);
+            // Check if settings exist for this user
+            $stmt = $db->prepare("SELECT id FROM site_settings WHERE user_id = ?");
+            $stmt->execute([$_SESSION['user_id']]);
+            
+            if ($stmt->fetch()) {
+                // Update existing settings
+                $stmt = $db->prepare("UPDATE site_settings SET site_title = ? WHERE user_id = ?");
+                $stmt->execute([$_POST['site_title'], $_SESSION['user_id']]);
+            } else {
+                // Insert new settings
+                $stmt = $db->prepare("INSERT INTO site_settings (user_id, site_title) VALUES (?, ?)");
+                $stmt->execute([$_SESSION['user_id'], $_POST['site_title']]);
+            }
         }
         
         if (isset($_FILES['favicon']) && $_FILES['favicon']['error'] === 0) {
@@ -21,92 +32,177 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $allowedTypes = ['image/x-icon', 'image/png', 'image/jpeg'];
             
             if (in_array($favicon['type'], $allowedTypes)) {
-                $uploadPath = '../favicon.' . pathinfo($favicon['name'], PATHINFO_EXTENSION);
-                move_uploaded_file($favicon['tmp_name'], $uploadPath);
+                $uploadDir = __DIR__ . '/../uploads/';
+                if (!file_exists($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
                 
-                $stmt = $db->prepare("UPDATE site_settings SET value = ? WHERE setting = 'favicon'");
-                $stmt->execute([$uploadPath]);
+                $extension = pathinfo($favicon['name'], PATHINFO_EXTENSION);
+                $uploadPath = $uploadDir . 'favicon.' . $extension;
+                $webPath = '/uploads/favicon.' . $extension;
+                
+                if (move_uploaded_file($favicon['tmp_name'], $uploadPath)) {
+                    // Update favicon URL in settings
+                    $stmt = $db->prepare("UPDATE site_settings SET favicon_url = ? WHERE user_id = ?");
+                    if ($stmt->execute([$webPath, $_SESSION['user_id']]) && $stmt->rowCount() === 0) {
+                        // If no rows were updated, insert new settings
+                        $stmt = $db->prepare("INSERT INTO site_settings (user_id, favicon_url) VALUES (?, ?)");
+                        $stmt->execute([$_SESSION['user_id'], $webPath]);
+                    }
+                }
             }
         }
     }
     
-    // User settings (can be expanded later)
-    header("Location: settings.php?success=1");
+    // Update user-specific settings
+    if (isset($_POST['ad_url'], $_POST['domains'])) {
+        $stmt = $db->prepare("SELECT id FROM video_settings WHERE user_id = ?");
+        $stmt->execute([$_SESSION['user_id']]);
+        
+        if ($stmt->fetch()) {
+            // Update existing settings
+            $stmt = $db->prepare("UPDATE video_settings SET ad_url = ?, domains = ? WHERE user_id = ?");
+            $stmt->execute([$_POST['ad_url'], $_POST['domains'], $_SESSION['user_id']]);
+        } else {
+            // Insert new settings
+            $stmt = $db->prepare("INSERT INTO video_settings (user_id, ad_url, domains) VALUES (?, ?, ?)");
+            $stmt->execute([$_SESSION['user_id'], $_POST['ad_url'], $_POST['domains']]);
+        }
+    }
+    
+    $_SESSION['flash_message'] = ['type' => 'success', 'text' => 'Settings updated successfully'];
+    header("Location: /settings");
     exit;
 }
 
-// Create site_settings table if not exists
-$db->exec("CREATE TABLE IF NOT EXISTS site_settings (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    setting VARCHAR(50) UNIQUE NOT NULL,
-    value TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)");
+// Get current settings
+$stmt = $db->prepare("SELECT * FROM site_settings WHERE user_id = ? ORDER BY id DESC LIMIT 1");
+$stmt->execute([$_SESSION['user_id']]);
+$settings = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Insert default settings if they don't exist
-$defaultSettings = [
-    'site_title' => 'Proxy Player',
-    'favicon' => '/favicon.ico'
-];
-
-foreach ($defaultSettings as $setting => $value) {
-    $stmt = $db->prepare("INSERT IGNORE INTO site_settings (setting, value) VALUES (?, ?)");
-    $stmt->execute([$setting, $value]);
+// If no settings exist yet, use defaults
+if (!$settings) {
+    $settings = [
+        'site_title' => 'Video Platform',
+        'favicon_url' => '/favicon.ico'
+    ];
 }
 
-// Get current settings
-$stmt = $db->prepare("SELECT * FROM site_settings");
-$stmt->execute();
-$settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+// Get user-specific settings
+$stmt = $db->prepare("SELECT * FROM video_settings WHERE user_id = ? ORDER BY id DESC LIMIT 1");
+$stmt->execute([$_SESSION['user_id']]);
+$userSettings = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// If no user settings exist yet, use defaults
+if (!$userSettings) {
+    $userSettings = [
+        'ad_url' => '',
+        'domains' => ''
+    ];
+}
+
+// Get flash message
+$flash_message = $_SESSION['flash_message'] ?? null;
+unset($_SESSION['flash_message']);
 ?>
 
-<?php include '../header.php'; ?>
+<?php require_once __DIR__ . '/../header.php'; ?>
 
-<div class="container mt-5">
-    <h2>Settings</h2>
-    
-    <?php if (isset($_GET['success'])): ?>
-        <div class="alert alert-success">Settings updated successfully!</div>
-    <?php endif; ?>
-
-    <form method="POST" enctype="multipart/form-data">
-        <?php if ($userRole === 'admin'): ?>
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h4>Site Settings (Admin Only)</h4>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label for="site_title" class="form-label">Site Title</label>
-                        <input type="text" class="form-control" id="site_title" name="site_title" 
-                               value="<?php echo htmlspecialchars($settings['site_title'] ?? ''); ?>">
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="favicon" class="form-label">Favicon</label>
-                        <input type="file" class="form-control" id="favicon" name="favicon" accept=".ico,.png,.jpg,.jpeg">
-                        <?php if (isset($settings['favicon'])): ?>
-                            <div class="mt-2">
-                                <small>Current favicon: <img src="<?php echo htmlspecialchars($settings['favicon']); ?>" 
-                                                          alt="Current favicon" style="width: 16px; height: 16px;"></small>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-        <?php endif; ?>
-
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
         <div class="card">
-            <div class="card-header">
-                <h4>User Settings</h4>
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-white mb-2">Settings</h1>
+                <p class="text-gray-400">Configure your settings</p>
             </div>
-            <div class="card-body">
-                <!-- Add user-specific settings here -->
-            </div>
-        </div>
 
-        <button type="submit" class="btn btn-primary mt-3">Save Settings</button>
-    </form>
+            <?php if ($flash_message): ?>
+                <div class="<?php echo $flash_message['type'] === 'error' ? 'bg-red-900/50 border-red-500 text-red-200' : 'bg-green-900/50 border-green-500 text-green-200'; ?> border px-4 py-3 rounded-lg mb-6">
+                    <?php echo htmlspecialchars($flash_message['text']); ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                <?php if ($userRole === 'admin'): ?>
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold text-white mb-4">Site Settings (Admin Only)</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="site_title" class="block text-sm font-medium text-gray-300 mb-2">
+                                    Site Title
+                                </label>
+                                <input type="text" 
+                                       id="site_title" 
+                                       name="site_title" 
+                                       class="input-field w-full"
+                                       value="<?php echo htmlspecialchars($settings['site_title']); ?>">
+                                <p class="mt-1 text-sm text-gray-400">This will be displayed in the browser tab and header</p>
+                            </div>
+
+                            <div>
+                                <label for="favicon" class="block text-sm font-medium text-gray-300 mb-2">
+                                    Favicon
+                                </label>
+                                <input type="file" 
+                                       id="favicon" 
+                                       name="favicon" 
+                                       accept=".ico,.png,.jpg,.jpeg"
+                                       class="input-field w-full">
+                                <?php if (!empty($settings['favicon_url'])): ?>
+                                    <div class="mt-2 flex items-center space-x-2">
+                                        <span class="text-sm text-gray-400">Current favicon:</span>
+                                        <img src="<?php echo htmlspecialchars($settings['favicon_url']); ?>" 
+                                             alt="Current favicon" 
+                                             class="w-4 h-4">
+                                    </div>
+                                <?php endif; ?>
+                                <p class="mt-1 text-sm text-gray-400">Recommended size: 32x32 pixels</p>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <div>
+                    <h2 class="text-xl font-semibold text-white mb-4">User Settings</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="ad_url" class="block text-sm font-medium text-gray-300 mb-2">
+                                Advertisement URL
+                            </label>
+                            <input type="url" 
+                                   id="ad_url" 
+                                   name="ad_url" 
+                                   class="input-field w-full"
+                                   value="<?php echo htmlspecialchars($userSettings['ad_url']); ?>"
+                                   placeholder="https://example.com/ads">
+                            <p class="mt-1 text-sm text-gray-400">Enter the URL where your video advertisements are hosted</p>
+                        </div>
+
+                        <div>
+                            <label for="domains" class="block text-sm font-medium text-gray-300 mb-2">
+                                Allowed Domains
+                            </label>
+                            <textarea id="domains" 
+                                      name="domains" 
+                                      rows="3" 
+                                      class="input-field w-full"
+                                      placeholder="example.com&#10;subdomain.example.com"><?php echo htmlspecialchars($userSettings['domains']); ?></textarea>
+                            <p class="mt-1 text-sm text-gray-400">Enter one domain per line. These domains will be allowed to embed your videos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-4">
+                    <a href="/dashboard" class="btn-secondary">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn-primary">
+                        Save Settings
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
-<?php include '../footer.php'; ?>
+<?php require_once __DIR__ . '/../footer.php'; ?>
