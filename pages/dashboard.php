@@ -227,7 +227,7 @@ require_once 'header.php';
             <div class="card bg-gradient-to-br from-blue-600/50 to-blue-800/50 border border-blue-500/20">
                 <div class="flex items-center">
                     <div class="w-14 h-14 flex items-center justify-center rounded-full bg-blue-500/20 mr-4 ring-2 ring-blue-500/40">
-                        <i class="fas fa-users text-2xl text-blue-400"></i>
+                        <i class="fa-duotone fa-thin fa-users text-2xl text-blue-400"></i>
                     </div>
                     <div>
                         <p class="text-sm text-gray-300">Total Users</p>
@@ -242,7 +242,7 @@ require_once 'header.php';
             <div class="card bg-gradient-to-br from-purple-600/50 to-purple-800/50 border border-purple-500/20">
                 <div class="flex items-center">
                     <div class="w-14 h-14 flex items-center justify-center rounded-full bg-purple-500/20 mr-4 ring-2 ring-purple-500/40">
-                        <i class="fas fa-film text-2xl text-purple-400"></i>
+                        <i class="fa-duotone fa-thin fa-film text-2xl text-purple-400"></i>
                     </div>
                     <div>
                         <p class="text-sm text-gray-300">Total Videos</p>
@@ -257,7 +257,7 @@ require_once 'header.php';
             <div class="card bg-gradient-to-br from-green-600/50 to-green-800/50 border border-green-500/20">
                 <div class="flex items-center">
                     <div class="w-14 h-14 flex items-center justify-center rounded-full bg-green-500/20 mr-4 ring-2 ring-green-500/40">
-                        <i class="fas fa-chart-line text-2xl text-green-400"></i>
+                        <i class="fa-duotone fa-thin fa-users text-2xl text-green-400"></i>
                     </div>
                     <div>
                         <p class="text-sm text-gray-300">Videos per User</p>
@@ -272,7 +272,7 @@ require_once 'header.php';
             <div class="card bg-gradient-to-br from-red-600/50 to-red-800/50 border border-red-500/20">
                 <div class="flex items-center">
                     <div class="w-14 h-14 flex items-center justify-center rounded-full bg-red-500/20 mr-4 ring-2 ring-red-500/40">
-                        <i class="fas fa-clock text-2xl text-red-400"></i>
+                        <i class="fa-duotone fa-thin fa-clock text-2xl text-red-400"></i>
                     </div>
                     <div>
                         <p class="text-sm text-gray-300">Recent Activity</p>
@@ -289,7 +289,7 @@ require_once 'header.php';
             <div class="card bg-gradient-to-br from-blue-600/50 to-blue-800/50 border border-blue-500/20">
                 <div class="flex items-center">
                     <div class="w-14 h-14 flex items-center justify-center rounded-full bg-blue-500/20 mr-4 ring-2 ring-blue-500/40">
-                        <i class="fas fa-film text-2xl text-blue-400"></i>
+                        <i class="fa-duotone fa-thin fa-film text-2xl text-blue-400"></i>
                     </div>
                     <div>
                         <p class="text-sm text-gray-300">Your Videos</p>
@@ -304,7 +304,7 @@ require_once 'header.php';
             <div class="card bg-gradient-to-br from-purple-600/50 to-purple-800/50 border border-purple-500/20">
                 <div class="flex items-center">
                     <div class="w-14 h-14 flex items-center justify-center rounded-full bg-purple-500/20 mr-4 ring-2 ring-purple-500/40">
-                        <i class="fas fa-clock text-2xl text-purple-400"></i>
+                        <i class="fa-duotone fa-thin fa-clock text-2xl text-purple-400"></i>
                     </div>
                     <div>
                         <p class="text-sm text-gray-300">Recent Uploads</p>
@@ -319,7 +319,7 @@ require_once 'header.php';
             <div class="card bg-gradient-to-br from-green-600/50 to-green-800/50 border border-green-500/20">
                 <div class="flex items-center">
                     <div class="w-14 h-14 flex items-center justify-center rounded-full bg-green-500/20 mr-4 ring-2 ring-green-500/40">
-                        <i class="fas fa-chart-bar text-2xl text-green-400"></i>
+                        <i class="fa-duotone fa-thin fa-chart-bar text-2xl text-green-400"></i>
                     </div>
                     <div>
                         <p class="text-sm text-gray-300">Weekly Activity</p>
@@ -334,7 +334,7 @@ require_once 'header.php';
             <div class="card bg-gradient-to-br from-red-600/50 to-red-800/50 border border-red-500/20">
                 <div class="flex items-center">
                     <div class="w-14 h-14 flex items-center justify-center rounded-full bg-red-500/20 mr-4 ring-2 ring-red-500/40">
-                        <i class="fas fa-chart-line text-2xl text-red-400"></i>
+                        <i class="fa-duotone fa-thin fa-chart-line text-2xl text-red-400"></i>
                     </div>
                     <div>
                         <p class="text-sm text-gray-300">Upload Rate</p>
@@ -387,7 +387,7 @@ require_once 'header.php';
         <div class="lg:col-span-2">
             <div class="card">
                 <div class="flex flex-col lg:flex-row justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-white mb-4 lg:mb-0"><?php echo $userRole === 'admin' ? 'All Videos (Admin View)' : 'Your Videos'; ?></h2>
+                    <h2 class="text-2xl font-bold text-white mb-4 lg:mb-0"><?php echo $userRole === 'admin' ? 'All Videos' : 'Your Videos'; ?></h2>
                     
                     <!-- Search Form -->
                     <form method="GET" class="flex flex-col lg:flex-row lg:items-center">
@@ -432,16 +432,16 @@ require_once 'header.php';
                                 </td>
                                 <td class="py-4 flex gap-2">
                                     <span class="icon-btn" onclick="copyVideoUrl('<?php echo htmlspecialchars($video['slug']); ?>')" title="Copy URL">
-                                        <i class="fas fa-link icon-copy"></i>
+                                        <i class="fa-duotone fa-thin fa-link icon-copy"></i>
                                     </span>
                                     <a href="/edit?id=<?php echo $video['id']; ?>" class="icon-btn" title="Edit Video">
-                                        <i class="fas fa-edit icon-copy"></i>
+                                        <i class="fa-duotone fa-thin fa-pen-to-square icon-copy"></i>
                                     </a>
                                     <form method="POST" action="/dashboard" class="inline" onsubmit="return confirm('Are you sure you want to delete this video?');">
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="id" value="<?php echo $video['id']; ?>">
                                         <button type="submit" class="icon-btn" title="Delete Video">
-                                            <i class="fas fa-trash icon-delete"></i>
+                                            <i class="fa-duotone fa-thin fa-trash icon-delete"></i>
                                         </button>
                                     </form>
                                 </td>

@@ -124,7 +124,8 @@ if (isset($video) && $current_page === 'player') {
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.7.2/css/all.css">
+
 </head>
 <body class="bg-dark text-gray-200 min-h-screen font-['Inter'] antialiased selection:bg-primary selection:text-white">
     <?php if (isLoggedIn()): ?>
@@ -144,36 +145,36 @@ if (isset($video) && $current_page === 'player') {
             
             <div class="hidden md:flex space-x-4" id="nav-menu">
                 <button type="button" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/dashboard') !== false ? 'text-white bg-primary/10' : ''; ?>" onclick="location.href='/dashboard'">
-                    <i class="fas fa-dashboard mr-2"></i>Dashboard
+                <i class="fa-duotone fa-thin fa-grid-2 mr-2"></i>Dashboard
                 </button>
                 <?php if ($userRole === 'admin'): ?>
                     <button type="button" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/users') !== false ? 'text-white bg-primary/10' : ''; ?>" onclick="location.href='/users'">
-                        <i class="fas fa-users mr-2"></i>Users
+                        <i class="fa-duotone fa-thin fa-users mr-2"></i>Users
                     </button>
                 <?php endif; ?>
                 <button type="button" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/settings') !== false ? 'text-white bg-primary/10' : ''; ?>" onclick="location.href='/settings'">
-                    <i class="fas fa-cog mr-2"></i>Settings
+                    <i class="fa-duotone fa-thin fa-gear mr-2"></i>Settings
                 </button>
                 <form action="/logout" method="POST" class="m-0">
-                    <button type="submit" class="btn-danger"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+                    <button type="submit" class="btn-danger"><i class="fa-duotone fa-thin fa-sign-out-alt mr-2"></i>Logout</button>
                 </form>
             </div>
         </div>
         
         <div class="md:hidden hidden flex flex-col space-y-2 mt-2 p-4 bg-slate-900/95 border-t border-slate-800" id="mobile-menu">
             <a href="/dashboard" class="block py-2 px-4 text-white hover:bg-primary/10 <?php echo strpos($_SERVER['REQUEST_URI'], '/dashboard') !== false ? 'bg-primary/10' : ''; ?>">
-                <i class="fas fa-dashboard mr-2"></i>Dashboard
+                <i class="fa-duotone fa-thin fa-dashboard mr-2"></i>Dashboard
             </a>
             <?php if ($userRole === 'admin'): ?>
                 <a href="/users" class="block py-2 px-4 text-white hover:bg-primary/10 <?php echo strpos($_SERVER['REQUEST_URI'], '/users') !== false ? 'bg-primary/10' : ''; ?>">
-                    <i class="fas fa-users mr-2"></i>Users
+                    <i class="fa-duotone fa-thin fa-users mr-2"></i>Users
                 </a>
             <?php endif; ?>
             <a href="/settings" class="block py-2 px-4 text-white hover:bg-primary/10 <?php echo strpos($_SERVER['REQUEST_URI'], '/settings') !== false ? 'bg-primary/10' : ''; ?>">
-                <i class="fas fa-cog mr-2"></i>Settings
+                <i class="fa-duotone fa-thin fa-gear mr-2"></i>Settings
             </a>
             <form action="/logout" method="POST" class="m-0">
-                <button type="submit" class="block w-full text-left py-2 px-4 text-white hover:bg-red-700"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+                <button type="submit" class="block w-full text-left py-2 px-4 text-white hover:bg-red-700"><i class="fa-duotone fa-thin fa-sign-out-alt mr-2"></i>Logout</button>
             </form>
         </div>
     </div>
