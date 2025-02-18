@@ -84,18 +84,31 @@ unset($_SESSION['flash_message']);
 
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-2xl mx-auto">
-        <div class="card">
-            <div class="mb-8">
-                <h1 class="text-3xl font-bold text-white mb-2">Settings</h1>
-                <p class="text-gray-400">Configure your settings</p>
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <h1 class="text-3xl font-bold text-white">Settings</h1>
             </div>
+        </div>
 
-            <?php if ($flash_message): ?>
-                <div class="<?php echo $flash_message['type'] === 'error' ? 'bg-red-900/50 border-red-500 text-red-200' : 'bg-green-900/50 border-green-500 text-green-200'; ?> border px-4 py-3 rounded-lg mb-6">
-                    <?php echo htmlspecialchars($flash_message['text']); ?>
-                </div>
-            <?php endif; ?>
+        <?php if ($flash_message): ?>
+            <div id="flash-message" class="<?php echo $flash_message['type'] === 'error' ? 'bg-red-900/50 border-red-500 text-red-200' : 'bg-green-900/50 border-green-500 text-green-200'; ?> border px-4 py-3 rounded-lg mb-6">
+                <?php echo htmlspecialchars($flash_message['text']); ?>
+            </div>
+            <script>
+                setTimeout(() => {
+                    const flashMessage = document.getElementById('flash-message');
+                    if (flashMessage) {
+                        flashMessage.style.transition = 'opacity 0.5s ease-out';
+                        flashMessage.style.opacity = '0';
+                        setTimeout(() => {
+                            flashMessage.remove();
+                        }, 500);
+                    }
+                }, 5000);
+            </script>
+        <?php endif; ?>
 
+        <div class="card">
             <form method="POST" class="space-y-6">
                 <?php if ($userRole === 'admin'): ?>
                     <div class="mb-6">
@@ -168,12 +181,8 @@ unset($_SESSION['flash_message']);
                 </div>
 
                 <div class="flex justify-end space-x-4">
-                    <a href="/dashboard" class="btn-secondary">
-                        Cancel
-                    </a>
-                    <button type="submit" class="btn-primary">
-                        Save Settings
-                    </button>
+                    <a href="/dashboard" class="btn-secondary">Cancel</a>
+                    <button type="submit" class="btn-primary">Save Settings</button>
                 </div>
             </form>
         </div>

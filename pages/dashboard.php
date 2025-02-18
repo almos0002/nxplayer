@@ -180,6 +180,12 @@ require_once 'header.php';
                 <?php endif; ?>
 
 <div class="container mx-auto px-4 py-8">
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <h1 class="text-3xl font-bold text-white">Dashboard</h1>
+            <a href="/edit" class="btn-primary">Add New Video</a>
+        </div>
+    </div>
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Add Video Form -->
         <div class="lg:col-span-1">
