@@ -18,38 +18,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             if ($stmt->fetch()) {
                 // Update existing settings
-                $stmt = $db->prepare("UPDATE site_settings SET site_title = ? WHERE user_id = ?");
-                $stmt->execute([$_POST['site_title'], $_SESSION['user_id']]);
+                $stmt = $db->prepare("UPDATE site_settings SET site_title = ?, favicon_url = ? WHERE user_id = ?");
+                $stmt->execute([$_POST['site_title'], $_POST['favicon_url'], $_SESSION['user_id']]);
             } else {
                 // Insert new settings
-                $stmt = $db->prepare("INSERT INTO site_settings (user_id, site_title) VALUES (?, ?)");
-                $stmt->execute([$_SESSION['user_id'], $_POST['site_title']]);
-            }
-        }
-        
-        if (isset($_FILES['favicon']) && $_FILES['favicon']['error'] === 0) {
-            $favicon = $_FILES['favicon'];
-            $allowedTypes = ['image/x-icon', 'image/png', 'image/jpeg'];
-            
-            if (in_array($favicon['type'], $allowedTypes)) {
-                $uploadDir = __DIR__ . '/../uploads/';
-                if (!file_exists($uploadDir)) {
-                    mkdir($uploadDir, 0777, true);
-                }
-                
-                $extension = pathinfo($favicon['name'], PATHINFO_EXTENSION);
-                $uploadPath = $uploadDir . 'favicon.' . $extension;
-                $webPath = '/uploads/favicon.' . $extension;
-                
-                if (move_uploaded_file($favicon['tmp_name'], $uploadPath)) {
-                    // Update favicon URL in settings
-                    $stmt = $db->prepare("UPDATE site_settings SET favicon_url = ? WHERE user_id = ?");
-                    if ($stmt->execute([$webPath, $_SESSION['user_id']]) && $stmt->rowCount() === 0) {
-                        // If no rows were updated, insert new settings
-                        $stmt = $db->prepare("INSERT INTO site_settings (user_id, favicon_url) VALUES (?, ?)");
-                        $stmt->execute([$_SESSION['user_id'], $webPath]);
-                    }
-                }
+                $stmt = $db->prepare("INSERT INTO site_settings (user_id, site_title, favicon_url) VALUES (?, ?, ?)");
+                $stmt->execute([$_SESSION['user_id'], $_POST['site_title'], $_POST['favicon_url']]);
             }
         }
     }
@@ -122,7 +96,7 @@ unset($_SESSION['flash_message']);
                 </div>
             <?php endif; ?>
 
-            <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            <form method="POST" class="space-y-6">
                 <?php if ($userRole === 'admin'): ?>
                     <div class="mb-6">
                         <h2 class="text-xl font-semibold text-white mb-4">Site Settings (Admin Only)</h2>
@@ -140,14 +114,15 @@ unset($_SESSION['flash_message']);
                             </div>
 
                             <div>
-                                <label for="favicon" class="block text-sm font-medium text-gray-300 mb-2">
-                                    Favicon
+                                <label for="favicon_url" class="block text-sm font-medium text-gray-300 mb-2">
+                                    Favicon URL
                                 </label>
-                                <input type="file" 
-                                       id="favicon" 
-                                       name="favicon" 
-                                       accept=".ico,.png,.jpg,.jpeg"
-                                       class="input-field w-full">
+                                <input type="url" 
+                                       id="favicon_url" 
+                                       name="favicon_url" 
+                                       class="input-field w-full"
+                                       value="<?php echo htmlspecialchars($settings['favicon_url']); ?>"
+                                       placeholder="https://example.com/favicon.ico">
                                 <?php if (!empty($settings['favicon_url'])): ?>
                                     <div class="mt-2 flex items-center space-x-2">
                                         <span class="text-sm text-gray-400">Current favicon:</span>
@@ -156,7 +131,7 @@ unset($_SESSION['flash_message']);
                                              class="w-4 h-4">
                                     </div>
                                 <?php endif; ?>
-                                <p class="mt-1 text-sm text-gray-400">Recommended size: 32x32 pixels</p>
+                                <p class="mt-1 text-sm text-gray-400">Enter the URL of your favicon (recommended size: 32x32 pixels)</p>
                             </div>
                         </div>
                     </div>
