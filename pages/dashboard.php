@@ -79,8 +79,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get total videos count for pagination
-try {
+// Get current user's role
+$stmt = $db->prepare("SELECT role FROM users WHERE id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$userRole = $stmt->fetchColumn();
+
+// Fetch videos based on user role
+if ($userRole === 'admin') {
+    // Admin sees all videos
+    $where_clause = "";
+    $params = [];
+    
+    if (!empty($search)) {
+        $where_clause = " AND (title LIKE ? OR file_id LIKE ? OR subtitle LIKE ?)";
+        $search_param = "%$search%";
+        $params = array_merge($params, [$search_param, $search_param, $search_param]);
+    }
+    
+    $stmt = $db->prepare("SELECT COUNT(*) FROM videos WHERE 1=1" . $where_clause);
+    $stmt->execute($params);
+    $total_videos = $stmt->fetchColumn();
+    $total_pages = ceil($total_videos / $limit);
+    
+    // Get videos for current page
+    $query = sprintf("SELECT * FROM videos WHERE 1=1 %s ORDER BY id DESC LIMIT %d OFFSET %d", 
+                    $where_clause, $limit, $offset);
+    $stmt = $db->prepare($query);
+    $stmt->execute($params);
+    $videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} else {
+    // Regular users only see their own videos
     $where_clause = "";
     $params = [$_SESSION['user_id']];
     
@@ -101,10 +129,6 @@ try {
     $stmt = $db->prepare($query);
     $stmt->execute($params);
     $videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $_SESSION['flash_message'] = ['type' => 'error', 'text' => 'Failed to fetch videos: ' . $e->getMessage()];
-    header('Location: /dashboard');
-    exit;
 }
 
 require_once 'header.php';
@@ -195,7 +219,7 @@ require_once 'header.php';
         <div class="lg:col-span-2">
             <div class="card">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-white">Your Videos</h2>
+                    <h2 class="text-2xl font-bold text-white"><?php echo $userRole === 'admin' ? 'All Videos (Admin View)' : 'Your Videos'; ?></h2>
                     
                     <!-- Search Form -->
                     <form method="GET" class="flex">
@@ -212,7 +236,7 @@ require_once 'header.php';
                 <?php if (empty($videos)): ?>
                 <div class="text-center py-8">
                     <p class="text-gray-400">
-                        <?php echo empty($search) ? 'No videos added yet.' : 'No videos found matching your search.'; ?>
+                        <?php echo empty($search) ? ($userRole === 'admin' ? 'No videos added yet.' : 'No videos added yet.') : 'No videos found matching your search.'; ?>
                     </p>
                 </div>
                 <?php else: ?>

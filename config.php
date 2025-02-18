@@ -15,12 +15,20 @@ try {
     die("Connection failed: " . $e->getMessage());
 }
 
+// Add role column if it doesn't exist
+try {
+    $db->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS role ENUM('admin', 'user') DEFAULT 'user'");
+} catch(PDOException $e) {
+    // If the column already exists, ignore the error
+}
+
 // Create users table if not exists
 $sql = "CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'user') DEFAULT 'user',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )";
 
@@ -107,12 +115,19 @@ try {
 
 // Helper functions
 function isLoggedIn() {
-    return isset($_SESSION['user_id']);
+    if (!isset($_SESSION['user_id'])) {
+        return false;
+    }
+    
+    global $db;
+    $stmt = $db->prepare("SELECT id FROM users WHERE id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    return $stmt->fetch() !== false;
 }
 
 function requireLogin() {
     if (!isLoggedIn()) {
-        header("Location: /login.php");
+        header('Location: /login.php');
         exit;
     }
 }
