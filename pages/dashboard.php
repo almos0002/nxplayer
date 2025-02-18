@@ -386,16 +386,16 @@ require_once 'header.php';
         <!-- Video List -->
         <div class="lg:col-span-2">
             <div class="card">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-white"><?php echo $userRole === 'admin' ? 'All Videos (Admin View)' : 'Your Videos'; ?></h2>
+                <div class="flex flex-col lg:flex-row justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-white mb-4 lg:mb-0"><?php echo $userRole === 'admin' ? 'All Videos (Admin View)' : 'Your Videos'; ?></h2>
                     
                     <!-- Search Form -->
-                    <form method="GET" class="flex">
+                    <form method="GET" class="flex flex-col lg:flex-row lg:items-center">
                         <input type="text" name="search" 
-                               class="input-field w-64"
+                               class="input-field w-full lg:w-64"
                                placeholder="Search videos..."
                                value="<?php echo htmlspecialchars($search); ?>">
-                        <button type="submit" class="btn-primary ml-2">
+                        <button type="submit" class="btn-primary lg:ml-2 mt-4 lg:mt-0">
                             Search
                         </button>
                     </form>

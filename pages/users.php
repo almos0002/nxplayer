@@ -88,8 +88,8 @@ unset($_SESSION['flash_message']);
 
 <div class="container mx-auto px-4 py-8">
     <div class="mb-8 flex justify-between items-center">
-        <h1 class="text-3xl font-bold text-white">Users Management</h1>
-        <a href="/add-user" class="btn-primary">Add New User</a>
+        <h1 class="text-3xl font-bold text-white">Users</h1>
+        <a href="/add-user" class="btn-primary">Add</a>
     </div>
 
     <?php if ($flash_message): ?>
@@ -111,16 +111,18 @@ unset($_SESSION['flash_message']);
     <?php endif; ?>
 
     <div class="card mb-6">
-        <form method="GET" class="flex gap-4">
+        <form method="GET" class="flex flex-col sm:flex-row gap-4">
             <input type="text" 
                    name="search" 
                    placeholder="Search by username or email" 
                    value="<?php echo htmlspecialchars($search); ?>"
-                   class="input-field flex-grow">
-            <button type="submit" class="btn-primary">Search</button>
-            <?php if (!empty($search)): ?>
-                <a href="/users" class="btn-secondary">Clear</a>
-            <?php endif; ?>
+                   class="input-field sm:flex-1">
+            <div class="sm:flex sm:items-center sm:gap-4">
+                <button type="submit" class="btn-primary">Search</button>
+                <?php if (!empty($search)): ?>
+                    <a href="/users" class="btn-secondary">Clear</a>
+                <?php endif; ?>
+            </div>
         </form>
     </div>
 

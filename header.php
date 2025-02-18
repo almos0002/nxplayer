@@ -128,46 +128,62 @@ if (isset($video) && $current_page === 'player') {
 </head>
 <body class="bg-dark text-gray-200 min-h-screen font-['Inter'] antialiased selection:bg-primary selection:text-white">
     <?php if (isLoggedIn()): ?>
-    <nav class="bg-slate-900/95 border-b border-slate-800 fixed w-full z-10 mb-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center">
-                    <a href="/dashboard" class="text-2xl font-bold text-white flex items-center">
-                        <?php if (!empty($favicon_url)): ?>
-                            <img src="<?php echo htmlspecialchars($favicon_url); ?>" alt="" class="w-8 h-8 mr-2">
-                        <?php endif; ?>
-                        <?php echo htmlspecialchars($site_title); ?>
+        <nav class="bg-slate-900/95 border-b border-slate-800 fixed w-full z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <a href="/dashboard" class="text-2xl font-bold text-white flex items-center">
+                <?php if (!empty($favicon_url)): ?>
+                    <img src="<?php echo htmlspecialchars($favicon_url); ?>" alt="" class="w-8 h-8 mr-2">
+                <?php endif; ?>
+                <?php echo htmlspecialchars($site_title); ?>
+            </a>
+            
+            <button class="md:hidden text-white text-2xl focus:outline-none" id="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="hidden md:flex space-x-4" id="nav-menu">
+                <a href="/dashboard" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/dashboard') !== false ? 'text-white bg-primary/10' : ''; ?>">
+                    <i class="fas fa-video mr-2"></i>Dashboard
+                </a>
+                <?php if ($userRole === 'admin'): ?>
+                    <a href="/users" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/users') !== false ? 'text-white bg-primary/10' : ''; ?>">
+                        <i class="fas fa-users mr-2"></i>Users
                     </a>
-                    <div class="hidden md:block">
-                        <div class="ml-10 flex items-baseline space-x-4">
-                            <a href="/dashboard" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/dashboard') !== false ? 'text-white bg-primary/10' : ''; ?>">
-                                <i class="fas fa-video mr-2"></i>Dashboard
-                            </a>
-                            <?php
-                            // Check if user is admin
-                            $stmt = $db->prepare("SELECT role FROM users WHERE id = ?");
-                            $stmt->execute([$_SESSION['user_id']]);
-                            $userRole = $stmt->fetchColumn();
-                            
-                            if ($userRole === 'admin'): 
-                            ?>
-                                <a href="/users" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/users') !== false || strpos($_SERVER['REQUEST_URI'], '/user-edit') !== false || strpos($_SERVER['REQUEST_URI'], '/add-user') !== false ? 'text-white bg-primary/10' : ''; ?>">
-                                    <i class="fas fa-users mr-2"></i>Users
-                                </a>
-                            <?php endif; ?>
-                            <a href="/settings" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/settings') !== false ? 'text-white bg-primary/10' : ''; ?>">
-                                <i class="fas fa-cog mr-2"></i>Settings
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center gap-4">
-                    <form action="/logout" method="POST" class="m-0">
-                        <button type="submit" class="btn-danger"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
-                    </form>
-                </div>
+                <?php endif; ?>
+                <a href="/settings" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/settings') !== false ? 'text-white bg-primary/10' : ''; ?>">
+                    <i class="fas fa-cog mr-2"></i>Settings
+                </a>
+                <form action="/logout" method="POST" class="m-0">
+                    <button type="submit" class="btn-danger"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+                </form>
             </div>
         </div>
-    </nav>
+        
+        <div class="md:hidden hidden flex flex-col space-y-2 mt-2 p-4 bg-slate-900/95 border-t border-slate-800" id="mobile-menu">
+            <a href="/dashboard" class="block py-2 px-4 text-white hover:bg-primary/10 <?php echo strpos($_SERVER['REQUEST_URI'], '/dashboard') !== false ? 'bg-primary/10' : ''; ?>">
+                <i class="fas fa-video mr-2"></i>Dashboard
+            </a>
+            <?php if ($userRole === 'admin'): ?>
+                <a href="/users" class="block py-2 px-4 text-white hover:bg-primary/10 <?php echo strpos($_SERVER['REQUEST_URI'], '/users') !== false ? 'bg-primary/10' : ''; ?>">
+                    <i class="fas fa-users mr-2"></i>Users
+                </a>
+            <?php endif; ?>
+            <a href="/settings" class="block py-2 px-4 text-white hover:bg-primary/10 <?php echo strpos($_SERVER['REQUEST_URI'], '/settings') !== false ? 'bg-primary/10' : ''; ?>">
+                <i class="fas fa-cog mr-2"></i>Settings
+            </a>
+            <form action="/logout" method="POST" class="m-0">
+                <button type="submit" class="block w-full text-left py-2 px-4 text-white hover:bg-red-700"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<script>
+    document.getElementById('menu-toggle').addEventListener('click', function() {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+</script>
+
     <?php endif; ?>
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-20">

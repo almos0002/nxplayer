@@ -79,27 +79,39 @@ if (isset($video) && $current_page === 'player') {
 <body class="min-h-screen">
     <!-- Navigation -->
     <nav class="bg-slate-900/95 border-b border-slate-800 fixed w-full z-[9999]">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                <a href="/" class="text-2xl font-bold text-white flex items-center">
-                        <?php if (!empty($favicon_url)): ?>
-                            <img src="<?php echo htmlspecialchars($favicon_url); ?>" alt="" class="w-8 h-8 mr-2">
-                        <?php endif; ?>
-                        <?php echo htmlspecialchars($site_title); ?>
-                    </a>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <?php if (isLoggedIn()): ?>
-                        <a href="/dashboard" class="btn-primary bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 focus:ring-4 focus:ring-violet-300 focus:ring-opacity-50 focus:outline-none focus:ring-offset-2 focus:ring-offset-violet-200 py-2.5 px-5 rounded-lg text-base font-semibold text-white shadow-lg transition duration-200 ease-in-out">Go to Dashboard</a>
-                    <?php else: ?>
-                        <a href="/login" class="btn bg-gray-800 hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 text-white font-semibold py-2.5 px-5 rounded-lg shadow-lg transition duration-200 ease-in-out">Login</a>
-                        <a href="/register" class="btn bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 focus:ring-4 focus:ring-violet-300 focus:ring-opacity-50 focus:outline-none focus:ring-offset-2 focus:ring-offset-violet-200 py-2.5 px-5 rounded-lg text-base font-semibold text-white shadow-lg transition duration-200 ease-in-out">Get Started</a>
-                    <?php endif; ?>
-                </div>
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center h-16">
+            <a href="/" class="text-2xl font-bold text-white flex items-center">
+                <?php if (!empty($favicon_url)): ?>
+                    <img src="<?php echo htmlspecialchars($favicon_url); ?>" alt="" class="w-8 h-8 mr-2">
+                <?php endif; ?>
+                <?php echo htmlspecialchars($site_title); ?>
+            </a>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="md:hidden text-white text-2xl focus:outline-none" id="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Navigation Links -->
+            <div id="menu" class="hidden lg:flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-4 absolute lg:static top-16 left-0 w-full lg:w-auto bg-slate-900 lg:bg-transparent py-4 lg:py-0 px-6 lg:px-0 shadow-lg lg:shadow-none">
+                <?php if (isLoggedIn()): ?>
+                    <a href="/dashboard" class="btn-primary bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 focus:ring-4 focus:ring-violet-300 focus:ring-opacity-50 focus:outline-none focus:ring-offset-2 focus:ring-offset-violet-200 py-2.5 px-5 rounded-lg text-base font-semibold text-white shadow-lg transition duration-200 ease-in-out">Go to Dashboard</a>
+                <?php else: ?>
+                    <a href="/login" class="btn bg-gray-800 hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 text-white font-semibold py-2.5 px-5 rounded-lg shadow-lg transition duration-200 ease-in-out">Login</a>
+                    <a href="/register" class="btn bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 focus:ring-4 focus:ring-violet-300 focus:ring-opacity-50 focus:outline-none focus:ring-offset-2 focus:ring-offset-violet-200 py-2.5 px-5 rounded-lg text-base font-semibold text-white shadow-lg transition duration-200 ease-in-out">Sign up</a>
+                <?php endif; ?>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
+
+<script>
+    document.getElementById('menu-toggle').addEventListener('click', function () {
+        document.getElementById('menu').classList.toggle('hidden');
+    });
+</script>
+
 
     <!-- Hero Section -->
     <section class="pt-24 pb-12 hero-gradient">
