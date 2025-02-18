@@ -155,9 +155,9 @@ if (isset($video) && $current_page === 'player') {
                 <button type="button" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/settings') !== false ? 'text-white bg-primary/10' : ''; ?>" onclick="location.href='/settings'">
                     <i class="fa-duotone fa-thin fa-gear mr-2"></i>Settings
                 </button>
-                <form action="/logout" method="POST" class="m-0">
-                    <button type="submit" class="btn-danger"><i class="fa-duotone fa-thin fa-sign-out-alt mr-2"></i>Logout</button>
-                </form>
+                <a href="/logout" class="btn-danger">
+                    <i class="fa-duotone fa-thin fa-sign-out-alt mr-2"></i>Logout
+                </a>
             </div>
         </div>
         
@@ -173,9 +173,9 @@ if (isset($video) && $current_page === 'player') {
             <a href="/settings" class="block py-2 px-4 text-white hover:bg-primary/10 <?php echo strpos($_SERVER['REQUEST_URI'], '/settings') !== false ? 'bg-primary/10' : ''; ?>">
                 <i class="fa-duotone fa-thin fa-gear mr-2"></i>Settings
             </a>
-            <form action="/logout" method="POST" class="m-0">
-                <button type="submit" class="block w-full text-left py-2 px-4 text-white hover:bg-red-700"><i class="fa-duotone fa-thin fa-sign-out-alt mr-2"></i>Logout</button>
-            </form>
+            <a href="/logout" class="block w-full text-left py-2 px-4 text-white hover:bg-red-700">
+                <i class="fa-duotone fa-thin fa-sign-out-alt mr-2"></i>Logout
+            </a>
         </div>
     </div>
 </nav>
