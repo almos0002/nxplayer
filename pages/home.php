@@ -146,7 +146,7 @@ if (isset($video) && $current_page === 'player') {
                 <div class="lg:w-1/2">
                     <div class="relative">
                         <div class="absolute inset-0 bg-blue-500 rounded-lg transform rotate-3 scale-105 opacity-10"></div>
-                        <img src="https://placehold.co/600x400/1e3a8a/ffffff?text=Video+Management" 
+                        <img src="https://castr.com/blog/wp-content/uploads/2021/01/Blog-Template-01.jpg" 
                              alt="Platform Preview" 
                              class="rounded-lg shadow-2xl relative z-10">
                     </div>

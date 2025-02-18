@@ -143,17 +143,17 @@ if (isset($video) && $current_page === 'player') {
             </button>
             
             <div class="hidden md:flex space-x-4" id="nav-menu">
-                <a href="/dashboard" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/dashboard') !== false ? 'text-white bg-primary/10' : ''; ?>">
-                    <i class="fas fa-video mr-2"></i>Dashboard
-                </a>
+                <button type="button" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/dashboard') !== false ? 'text-white bg-primary/10' : ''; ?>" onclick="location.href='/dashboard'">
+                    <i class="fas fa-dashboard mr-2"></i>Dashboard
+                </button>
                 <?php if ($userRole === 'admin'): ?>
-                    <a href="/users" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/users') !== false ? 'text-white bg-primary/10' : ''; ?>">
+                    <button type="button" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/users') !== false ? 'text-white bg-primary/10' : ''; ?>" onclick="location.href='/users'">
                         <i class="fas fa-users mr-2"></i>Users
-                    </a>
+                    </button>
                 <?php endif; ?>
-                <a href="/settings" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/settings') !== false ? 'text-white bg-primary/10' : ''; ?>">
+                <button type="button" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/settings') !== false ? 'text-white bg-primary/10' : ''; ?>" onclick="location.href='/settings'">
                     <i class="fas fa-cog mr-2"></i>Settings
-                </a>
+                </button>
                 <form action="/logout" method="POST" class="m-0">
                     <button type="submit" class="btn-danger"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
                 </form>
@@ -162,7 +162,7 @@ if (isset($video) && $current_page === 'player') {
         
         <div class="md:hidden hidden flex flex-col space-y-2 mt-2 p-4 bg-slate-900/95 border-t border-slate-800" id="mobile-menu">
             <a href="/dashboard" class="block py-2 px-4 text-white hover:bg-primary/10 <?php echo strpos($_SERVER['REQUEST_URI'], '/dashboard') !== false ? 'bg-primary/10' : ''; ?>">
-                <i class="fas fa-video mr-2"></i>Dashboard
+                <i class="fas fa-dashboard mr-2"></i>Dashboard
             </a>
             <?php if ($userRole === 'admin'): ?>
                 <a href="/users" class="block py-2 px-4 text-white hover:bg-primary/10 <?php echo strpos($_SERVER['REQUEST_URI'], '/users') !== false ? 'bg-primary/10' : ''; ?>">
