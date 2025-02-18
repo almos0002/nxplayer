@@ -153,16 +153,12 @@ if (isset($video) && $current_page === 'player') {
                             <a href="/settings" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/settings') !== false ? 'text-white bg-primary/10' : ''; ?>">
                                 <i class="fas fa-cog mr-2"></i>Settings
                             </a>
-                            <a href="/logout" class="nav-link">
-                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                            </a>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center gap-4">
-                    <span class="text-gray-300">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
                     <form action="/logout" method="POST" class="m-0">
-                        <button type="submit" class="btn-danger">Logout</button>
+                        <button type="submit" class="btn-danger"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
                     </form>
                 </div>
             </div>

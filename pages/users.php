@@ -25,10 +25,33 @@ if (isset($_POST['delete_user']) && !empty($_POST['user_id'])) {
     }
 }
 
+// Pagination settings
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$limit = 10; // Users per page
+$offset = ($page - 1) * $limit;
+
 // Get search query
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// Prepare the base query
+// Prepare the base query for counting total users
+$countQuery = "SELECT COUNT(DISTINCT u.id) 
+               FROM users u 
+               LEFT JOIN video_settings vs ON u.id = vs.user_id 
+               LEFT JOIN videos v ON u.id = v.user_id";
+
+$params = [];
+if (!empty($search)) {
+    $countQuery .= " WHERE u.username LIKE ? OR u.email LIKE ?";
+    $params = ["%$search%", "%$search%"];
+}
+
+// Get total users count
+$stmt = $db->prepare($countQuery);
+$stmt->execute($params);
+$total_users = $stmt->fetchColumn();
+$total_pages = ceil($total_users / $limit);
+
+// Prepare the main query with pagination
 $query = "SELECT u.*, 
           vs.ad_url, vs.domains,
           COUNT(v.id) as video_count 
@@ -36,15 +59,24 @@ $query = "SELECT u.*,
           LEFT JOIN video_settings vs ON u.id = vs.user_id 
           LEFT JOIN videos v ON u.id = v.user_id";
 
-$params = [];
 if (!empty($search)) {
     $query .= " WHERE u.username LIKE ? OR u.email LIKE ?";
-    $params = ["%$search%", "%$search%"];
 }
 
-$query .= " GROUP BY u.id ORDER BY u.id ASC";
+$query .= " GROUP BY u.id ORDER BY u.id ASC LIMIT ? OFFSET ?";
+
+// Execute the query with proper parameter types
 $stmt = $db->prepare($query);
-$stmt->execute($params);
+if (!empty($search)) {
+    $stmt->bindValue(1, "%$search%", PDO::PARAM_STR);
+    $stmt->bindValue(2, "%$search%", PDO::PARAM_STR);
+    $stmt->bindValue(3, $limit, PDO::PARAM_INT);
+    $stmt->bindValue(4, $offset, PDO::PARAM_INT);
+} else {
+    $stmt->bindValue(1, $limit, PDO::PARAM_INT);
+    $stmt->bindValue(2, $offset, PDO::PARAM_INT);
+}
+$stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get flash message
@@ -132,6 +164,46 @@ unset($_SESSION['flash_message']);
                 </tbody>
             </table>
         </div>
+
+        <?php if ($total_pages > 1): ?>
+            <div class="mt-6">
+                <div class="flex justify-center space-x-1">
+                    <?php if ($page > 1): ?>
+                        <a href="/users?page=1<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
+                           class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700">
+                            First
+                        </a>
+                        <a href="/users?page=<?php echo $page - 1; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
+                           class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700">
+                            Previous
+                        </a>
+                    <?php endif; ?>
+
+                    <?php
+                    $start = max(1, min($page - 2, $total_pages - 4));
+                    $end = min($total_pages, max($page + 2, 5));
+                    
+                    for ($i = $start; $i <= $end; $i++):
+                    ?>
+                        <a href="/users?page=<?php echo $i; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
+                           class="px-4 py-2 text-sm font-medium <?php echo $i === $page ? 'bg-blue-600 text-white' : 'text-white bg-gray-800 hover:bg-gray-700'; ?> rounded-md">
+                            <?php echo $i; ?>
+                        </a>
+                    <?php endfor; ?>
+
+                    <?php if ($page < $total_pages): ?>
+                        <a href="/users?page=<?php echo $page + 1; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
+                           class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700">
+                            Next
+                        </a>
+                        <a href="/users?page=<?php echo $total_pages; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
+                           class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700">
+                            Last
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 
