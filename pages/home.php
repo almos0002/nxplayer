@@ -1,5 +1,41 @@
 <?php
 require_once __DIR__ . '/../config.php';
+
+$site_settings = null;
+$site_title = 'Video Platform'; // Default value
+$favicon_url = 'https://i.postimg.cc/8NQsW-CMc/play.png?dl=1';  // Default value
+
+if (isLoggedIn() && isset($_SESSION['user_id'])) {
+    try {
+        $stmt = $db->prepare("SELECT * FROM site_settings WHERE user_id = ? ORDER BY id DESC LIMIT 1");
+        $stmt->execute([$_SESSION['user_id']]);
+        $site_settings = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($site_settings) {
+            $site_title = $site_settings['site_title'];
+            $favicon_url = $site_settings['favicon_url'] ?: '/favicon.ico';
+        }
+    } catch (PDOException $e) {
+        // Silently fail, use defaults
+    }
+}
+
+// Get current page name
+$current_page = basename($_SERVER['PHP_SELF'], '.php');
+$page_title = '';
+
+// Set page-specific title
+if (isset($video) && $current_page === 'player') {
+    $page_title = htmlspecialchars($video['title']);
+} else {
+    $page_title = match($current_page) {
+        'dashboard' => 'Dashboard',
+        'settings' => 'Settings',
+        'edit' => 'Edit Video',
+        default => ''
+    };
+    $page_title = $page_title ? "$page_title - $site_title" : $site_title;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -8,10 +44,15 @@ require_once __DIR__ . '/../config.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proxy Player - Video Management Platform</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <?php if (!empty($favicon_url)): ?>
+    <link rel="icon" type="image/x-icon" href="<?php echo htmlspecialchars($favicon_url); ?>">
+    <?php endif; ?>
     <style>
         body {
             background-color: #0f172a;
+            font-family: 'Inter', sans-serif;
             color: #e2e8f0;
         }
         .gradient-text {
@@ -37,21 +78,23 @@ require_once __DIR__ . '/../config.php';
 </head>
 <body class="min-h-screen">
     <!-- Navigation -->
-    <nav class="bg-slate-900/95 border-b border-slate-800 fixed w-full z-10">
+    <nav class="bg-slate-900/95 border-b border-slate-800 fixed w-full z-[9999]">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
-                    <a href="/" class="text-2xl font-bold text-white">
-                        <i class="fas fa-play-circle text-blue-500 mr-2"></i>
-                        Proxy Player
+                <a href="/" class="text-2xl font-bold text-white flex items-center">
+                        <?php if (!empty($favicon_url)): ?>
+                            <img src="<?php echo htmlspecialchars($favicon_url); ?>" alt="" class="w-8 h-8 mr-2">
+                        <?php endif; ?>
+                        <?php echo htmlspecialchars($site_title); ?>
                     </a>
                 </div>
                 <div class="flex items-center space-x-4">
                     <?php if (isLoggedIn()): ?>
-                        <a href="/dashboard" class="btn-primary">Go to Dashboard</a>
+                        <a href="/dashboard" class="btn-primary bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 focus:ring-4 focus:ring-violet-300 focus:ring-opacity-50 focus:outline-none focus:ring-offset-2 focus:ring-offset-violet-200 py-2.5 px-5 rounded-lg text-base font-semibold text-white shadow-lg transition duration-200 ease-in-out">Go to Dashboard</a>
                     <?php else: ?>
-                        <a href="/login" class="btn-secondary">Login</a>
-                        <a href="/register" class="btn-primary">Get Started</a>
+                        <a href="/login" class="btn bg-gray-800 hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 text-white font-semibold py-2.5 px-5 rounded-lg shadow-lg transition duration-200 ease-in-out">Login</a>
+                        <a href="/register" class="btn bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 focus:ring-4 focus:ring-violet-300 focus:ring-opacity-50 focus:outline-none focus:ring-offset-2 focus:ring-offset-violet-200 py-2.5 px-5 rounded-lg text-base font-semibold text-white shadow-lg transition duration-200 ease-in-out">Get Started</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -73,15 +116,15 @@ require_once __DIR__ . '/../config.php';
                     </p>
                     <div class="flex space-x-4">
                         <?php if (!isLoggedIn()): ?>
-                            <a href="/register" class="btn-primary text-lg px-8 py-3">
+                            <a href="/register" class="btn bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 focus:ring-4 focus:ring-violet-300 focus:ring-opacity-50 focus:outline-none focus:ring-offset-2 focus:ring-offset-violet-200 py-2.5 px-5 rounded-lg text-base font-semibold text-white shadow-lg transition duration-200 ease-in-out">
                                 Start Free
                                 <i class="fas fa-arrow-right ml-2"></i>
                             </a>
-                            <a href="#features" class="btn-secondary text-lg px-8 py-3">
+                            <a href="#features" class="btn bg-gray-800 hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 text-white font-semibold py-2.5 px-5 rounded-lg shadow-lg transition duration-200 ease-in-out">
                                 Learn More
                             </a>
                         <?php else: ?>
-                            <a href="/dashboard" class="btn-primary text-lg px-8 py-3">
+                            <a href="/dashboard" class="btn-primary bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 focus:ring-4 focus:ring-violet-300 focus:ring-opacity-50 focus:outline-none focus:ring-offset-2 focus:ring-offset-violet-200 py-2.5 px-5 rounded-lg text-base font-semibold text-white shadow-lg transition duration-200 ease-in-out">
                                 Go to Dashboard
                                 <i class="fas fa-arrow-right ml-2"></i>
                             </a>
@@ -181,21 +224,19 @@ require_once __DIR__ . '/../config.php';
         <div class="container mx-auto px-4 text-center">
             <h2 class="text-4xl font-bold mb-6">Ready to Get Started?</h2>
             <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-                Join thousands of users who trust Proxy Player for their video management needs.
+                Join thousands of users who trust <?php echo htmlspecialchars($site_title); ?> for their video management needs.
             </p>
             <?php if (!isLoggedIn()): ?>
                 <div class="flex justify-center space-x-4">
-                    <a href="/register" class="btn-primary text-lg px-8 py-3">
+                    <a href="/register" class="btn bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 focus:ring-4 focus:ring-violet-300 focus:ring-opacity-50 focus:outline-none focus:ring-offset-2 focus:ring-offset-violet-200 py-2.5 px-5 rounded-lg text-base font-semibold text-white shadow-lg transition duration-200 ease-in-out">
                         Create Free Account
                     </a>
-                    <a href="/login" class="btn-secondary text-lg px-8 py-3">
+                    <a href="/login" class="btn bg-gray-800 hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 text-white font-semibold py-2.5 px-5 rounded-lg shadow-lg transition duration-200 ease-in-out">
                         Sign In
                     </a>
                 </div>
             <?php else: ?>
-                <a href="/dashboard" class="btn-primary text-lg px-8 py-3">
-                    Go to Dashboard
-                </a>
+                <a href="/dashboard" class="btn-primary bg-gradient-to-r from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 focus:ring-4 focus:ring-violet-300 focus:ring-opacity-50 focus:outline-none focus:ring-offset-2 focus:ring-offset-violet-200 py-2.5 px-5 rounded-lg text-base font-semibold text-white shadow-lg transition duration-200 ease-in-out">Go to Dashboard</a>
             <?php endif; ?>
         </div>
     </section>
@@ -205,9 +246,11 @@ require_once __DIR__ . '/../config.php';
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-8 md:mb-0">
-                    <a href="/" class="text-2xl font-bold text-white">
-                        <i class="fas fa-play-circle text-blue-500 mr-2"></i>
-                        Proxy Player
+                <a href="/" class="text-2xl font-bold text-white flex items-center">
+                        <?php if (!empty($favicon_url)): ?>
+                            <img src="<?php echo htmlspecialchars($favicon_url); ?>" alt="" class="w-8 h-8 mr-2">
+                        <?php endif; ?>
+                        <?php echo htmlspecialchars($site_title); ?>
                     </a>
                     <p class="text-gray-400 mt-2">Advanced Video Management Platform</p>
                 </div>
@@ -224,7 +267,7 @@ require_once __DIR__ . '/../config.php';
                 </div>
             </div>
             <div class="border-t border-slate-800 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; <?php echo date('Y'); ?> Proxy Player. All rights reserved.</p>
+                <p>&copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($site_title); ?>. All rights reserved.</p>
             </div>
         </div>
     </footer>
