@@ -84,6 +84,39 @@ $stmt = $db->prepare("SELECT role FROM users WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $userRole = $stmt->fetchColumn();
 
+// Get statistics based on user role
+if ($userRole === 'admin') {
+    // Admin statistics
+    $stmt = $db->prepare("SELECT COUNT(*) FROM users");
+    $stmt->execute();
+    $total_users = $stmt->fetchColumn();
+
+    $stmt = $db->prepare("SELECT COUNT(*) FROM videos");
+    $stmt->execute();
+    $total_videos = $stmt->fetchColumn();
+
+    $stmt = $db->prepare("SELECT COUNT(*) FROM videos WHERE created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)");
+    $stmt->execute();
+    $videos_last_24h = $stmt->fetchColumn();
+
+    $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)");
+    $stmt->execute();
+    $new_users_week = $stmt->fetchColumn();
+} else {
+    // Regular user statistics
+    $stmt = $db->prepare("SELECT COUNT(*) FROM videos WHERE user_id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $user_total_videos = $stmt->fetchColumn();
+
+    $stmt = $db->prepare("SELECT COUNT(*) FROM videos WHERE user_id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)");
+    $stmt->execute([$_SESSION['user_id']]);
+    $user_videos_last_24h = $stmt->fetchColumn();
+
+    $stmt = $db->prepare("SELECT COUNT(*) FROM videos WHERE user_id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)");
+    $stmt->execute([$_SESSION['user_id']]);
+    $user_videos_last_week = $stmt->fetchColumn();
+}
+
 // Fetch videos based on user role
 if ($userRole === 'admin') {
     // Admin sees all videos
@@ -186,6 +219,135 @@ require_once 'header.php';
             <h1 class="text-3xl font-bold text-white">Dashboard</h1>
         </div>
     </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <?php if ($userRole === 'admin'): ?>
+            <!-- Admin Statistics -->
+            <div class="card bg-gradient-to-br from-blue-600/50 to-blue-800/50 border border-blue-500/20">
+                <div class="flex items-center">
+                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-blue-500/20 mr-4 ring-2 ring-blue-500/40">
+                        <i class="fas fa-users text-2xl text-blue-400"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-300">Total Users</p>
+                        <p class="text-2xl font-bold text-white"><?php echo number_format($total_users); ?></p>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-400">
+                    <span class="text-green-400">+<?php echo $new_users_week; ?></span> new this week
+                </div>
+            </div>
+
+            <div class="card bg-gradient-to-br from-purple-600/50 to-purple-800/50 border border-purple-500/20">
+                <div class="flex items-center">
+                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-purple-500/20 mr-4 ring-2 ring-purple-500/40">
+                        <i class="fas fa-film text-2xl text-purple-400"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-300">Total Videos</p>
+                        <p class="text-2xl font-bold text-white"><?php echo number_format($total_videos); ?></p>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-400">
+                    <span class="text-green-400">+<?php echo $videos_last_24h; ?></span> in last 24h
+                </div>
+            </div>
+
+            <div class="card bg-gradient-to-br from-green-600/50 to-green-800/50 border border-green-500/20">
+                <div class="flex items-center">
+                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-green-500/20 mr-4 ring-2 ring-green-500/40">
+                        <i class="fas fa-chart-line text-2xl text-green-400"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-300">Videos per User</p>
+                        <p class="text-2xl font-bold text-white"><?php echo $total_users > 0 ? number_format($total_videos / $total_users, 1) : '0'; ?></p>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-400">
+                    Average per user
+                </div>
+            </div>
+
+            <div class="card bg-gradient-to-br from-red-600/50 to-red-800/50 border border-red-500/20">
+                <div class="flex items-center">
+                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-red-500/20 mr-4 ring-2 ring-red-500/40">
+                        <i class="fas fa-clock text-2xl text-red-400"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-300">Recent Activity</p>
+                        <p class="text-2xl font-bold text-white"><?php echo $videos_last_24h + $new_users_week; ?></p>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-400">
+                    New videos & users recently
+                </div>
+            </div>
+
+        <?php else: ?>
+            <!-- User Statistics -->
+            <div class="card bg-gradient-to-br from-blue-600/50 to-blue-800/50 border border-blue-500/20">
+                <div class="flex items-center">
+                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-blue-500/20 mr-4 ring-2 ring-blue-500/40">
+                        <i class="fas fa-film text-2xl text-blue-400"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-300">Your Videos</p>
+                        <p class="text-2xl font-bold text-white"><?php echo number_format($user_total_videos); ?></p>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-400">
+                    Total videos uploaded
+                </div>
+            </div>
+
+            <div class="card bg-gradient-to-br from-purple-600/50 to-purple-800/50 border border-purple-500/20">
+                <div class="flex items-center">
+                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-purple-500/20 mr-4 ring-2 ring-purple-500/40">
+                        <i class="fas fa-clock text-2xl text-purple-400"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-300">Recent Uploads</p>
+                        <p class="text-2xl font-bold text-white"><?php echo number_format($user_videos_last_24h); ?></p>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-400">
+                    Uploaded in last 24h
+                </div>
+            </div>
+
+            <div class="card bg-gradient-to-br from-green-600/50 to-green-800/50 border border-green-500/20">
+                <div class="flex items-center">
+                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-green-500/20 mr-4 ring-2 ring-green-500/40">
+                        <i class="fas fa-chart-bar text-2xl text-green-400"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-300">Weekly Activity</p>
+                        <p class="text-2xl font-bold text-white"><?php echo number_format($user_videos_last_week); ?></p>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-400">
+                    Videos this week
+                </div>
+            </div>
+
+            <div class="card bg-gradient-to-br from-red-600/50 to-red-800/50 border border-red-500/20">
+                <div class="flex items-center">
+                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-red-500/20 mr-4 ring-2 ring-red-500/40">
+                        <i class="fas fa-chart-line text-2xl text-red-400"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-300">Upload Rate</p>
+                        <p class="text-2xl font-bold text-white"><?php echo number_format($user_videos_last_week / 7, 1); ?></p>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-400">
+                    Average uploads per day
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Add Video Form -->
         <div class="lg:col-span-1">
