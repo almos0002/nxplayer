@@ -26,6 +26,29 @@ if (isLoggedIn() && isset($_SESSION['user_id'])) {
 
 // Get current page name
 $current_page = basename($_SERVER['PHP_SELF'], '.php');
+
+// Also check the REQUEST_URI to handle routed pages
+$request_uri = $_SERVER['REQUEST_URI'];
+if (strpos($request_uri, '?') !== false) {
+    $request_uri = substr($request_uri, 0, strpos($request_uri, '?'));
+}
+$request_path = trim($request_uri, '/');
+
+// Determine the current page more accurately
+if ($request_path === 'dashboard' || $request_path === '') {
+    $current_page = 'dashboard';
+} elseif ($request_path === 'settings') {
+    $current_page = 'settings';
+} elseif (strpos($request_path, 'edit') === 0) {
+    $current_page = 'edit';
+} elseif (strpos($request_path, 'users') === 0) {
+    $current_page = 'users';
+} elseif (strpos($request_path, 'user-edit') === 0) {
+    $current_page = 'user-edit';
+} elseif (strpos($request_path, 'add-user') === 0) {
+    $current_page = 'add-user';
+}
+
 $page_title = '';
 
 // Set page-specific title
@@ -36,6 +59,9 @@ if (isset($video) && $current_page === 'player') {
         'dashboard' => 'Dashboard',
         'settings' => 'Settings',
         'edit' => 'Edit Video',
+        'users' => 'User Management',
+        'user-edit' => 'Edit User',
+        'add-user' => 'Add User',
         default => ''
     };
     $page_title = $page_title ? "$page_title - $site_title" : $site_title;
