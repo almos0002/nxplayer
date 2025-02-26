@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             // Check if user is admin
             $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
-            
+
             if ($isAdmin) {
                 // Admins can delete any video
                 $stmt = $db->prepare("DELETE FROM videos WHERE id = ?");
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $db->prepare("DELETE FROM videos WHERE id = ? AND user_id = ?");
                 $stmt->execute([$_POST['id'], $_SESSION['user_id']]);
             }
-            
+
             $_SESSION['flash_message'] = ['type' => 'success', 'text' => 'Video deleted successfully'];
             header('Location: /dashboard');
             exit;
@@ -58,7 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     exit;
                 } else {
                     // Generate random unique slug
-                    function generateRandomSlug($length = 6) {
+                    function generateRandomSlug($length = 6)
+                    {
                         $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
                         $slug = '';
                         for ($i = 0; $i < $length; $i++) {
@@ -133,21 +134,25 @@ if ($userRole === 'admin') {
     // Admin sees all videos
     $where_clause = "";
     $params = [];
-    
+
     if (!empty($search)) {
         $where_clause = " AND (title LIKE ? OR file_id LIKE ? OR subtitle LIKE ?)";
         $search_param = "%$search%";
         $params = array_merge($params, [$search_param, $search_param, $search_param]);
     }
-    
+
     $stmt = $db->prepare("SELECT COUNT(*) FROM videos WHERE 1=1" . $where_clause);
     $stmt->execute($params);
     $total_videos = $stmt->fetchColumn();
     $total_pages = ceil($total_videos / $limit);
-    
+
     // Get videos for current page
-    $query = sprintf("SELECT * FROM videos WHERE 1=1 %s ORDER BY id DESC LIMIT %d OFFSET %d", 
-                    $where_clause, $limit, $offset);
+    $query = sprintf(
+        "SELECT * FROM videos WHERE 1=1 %s ORDER BY id DESC LIMIT %d OFFSET %d",
+        $where_clause,
+        $limit,
+        $offset
+    );
     $stmt = $db->prepare($query);
     $stmt->execute($params);
     $videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -155,21 +160,25 @@ if ($userRole === 'admin') {
     // Regular users only see their own videos
     $where_clause = "";
     $params = [$_SESSION['user_id']];
-    
+
     if (!empty($search)) {
         $where_clause = " AND (title LIKE ? OR file_id LIKE ? OR subtitle LIKE ?)";
         $search_param = "%$search%";
         $params = array_merge($params, [$search_param, $search_param, $search_param]);
     }
-    
+
     $stmt = $db->prepare("SELECT COUNT(*) FROM videos WHERE user_id = ?" . $where_clause);
     $stmt->execute($params);
     $total_videos = $stmt->fetchColumn();
     $total_pages = ceil($total_videos / $limit);
-    
+
     // Get videos for current page
-    $query = sprintf("SELECT * FROM videos WHERE user_id = ? %s ORDER BY id DESC LIMIT %d OFFSET %d", 
-                    $where_clause, $limit, $offset);
+    $query = sprintf(
+        "SELECT * FROM videos WHERE user_id = ? %s ORDER BY id DESC LIMIT %d OFFSET %d",
+        $where_clause,
+        $limit,
+        $offset
+    );
     $stmt = $db->prepare($query);
     $stmt->execute($params);
     $videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -178,54 +187,54 @@ if ($userRole === 'admin') {
 require_once 'header.php';
 ?>
 <?php if ($flash_message): ?>
-                <div id="flash-message" class="<?php echo $flash_message['type'] === 'error' ? 'bg-red-900/50 border-red-500 text-red-200' : 'bg-green-900/50 border-green-500 text-green-200'; ?> border px-4 py-3 rounded-lg mb-6 transform transition-all duration-500 ease-in-out">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <?php if ($flash_message['type'] === 'error'): ?>
-                                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                </svg>
-                            <?php else: ?>
-                                <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
-                            <?php endif; ?>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm leading-5">
-                                <?php echo htmlspecialchars($flash_message['text']); ?>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <script>
-                    // Animate flash message
-                    const flashMessage = document.getElementById('flash-message');
-                    if (flashMessage) {
-                        // Fade in
-                        flashMessage.style.opacity = '0';
-                        flashMessage.style.transform = 'translateY(-10px)';
-                        setTimeout(() => {
-                            flashMessage.style.opacity = '1';
-                            flashMessage.style.transform = 'translateY(0)';
-                        }, 100);
-
-                        // Fade out after delay
-                        setTimeout(() => {
-                            flashMessage.style.opacity = '0';
-                            flashMessage.style.transform = 'translateY(-10px)';
-                            setTimeout(() => {
-                                flashMessage.style.display = 'none';
-                            }, 500);
-                        }, 5000);
-                    }
-                </script>
+    <div id="flash-message" class="<?php echo $flash_message['type'] === 'error' ? 'bg-red-900/50 border-red-500 text-red-200' : 'bg-green-900/50 border-green-500 text-green-200'; ?> border px-4 py-3 rounded-lg mb-6 transform transition-all duration-500 ease-in-out">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <?php if ($flash_message['type'] === 'error'): ?>
+                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                <?php else: ?>
+                    <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
                 <?php endif; ?>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm leading-5">
+                    <?php echo htmlspecialchars($flash_message['text']); ?>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Animate flash message
+        const flashMessage = document.getElementById('flash-message');
+        if (flashMessage) {
+            // Fade in
+            flashMessage.style.opacity = '0';
+            flashMessage.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+                flashMessage.style.opacity = '1';
+                flashMessage.style.transform = 'translateY(0)';
+            }, 100);
+
+            // Fade out after delay
+            setTimeout(() => {
+                flashMessage.style.opacity = '0';
+                flashMessage.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    flashMessage.style.display = 'none';
+                }, 500);
+            }, 5000);
+        }
+    </script>
+<?php endif; ?>
 
 <div class="container mx-auto px-4 py-8">
     <div class="mb-8">
-    <span class="text-gray-300">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
+        <span class="text-gray-300">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
         <div class="flex items-center justify-between">
             <h1 class="text-3xl font-bold text-white">Dashboard</h1>
         </div>
@@ -364,27 +373,27 @@ require_once 'header.php';
         <div class="lg:col-span-1">
             <div class="card">
                 <h2 class="text-2xl font-bold text-white mb-6">Add New Video</h2>
-                
+
                 <form method="POST" action="/dashboard" class="space-y-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">Title</label>
                         <input type="text" name="title" required
-                               class="input-field w-full"
-                               value="<?php echo htmlspecialchars($_POST['title'] ?? ''); ?>">
+                            class="input-field w-full"
+                            value="<?php echo htmlspecialchars($_POST['title'] ?? ''); ?>">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">File ID</label>
                         <input type="text" name="file_id" required
-                               class="input-field w-full"
-                               value="<?php echo htmlspecialchars($_POST['file_id'] ?? ''); ?>">
+                            class="input-field w-full"
+                            value="<?php echo htmlspecialchars($_POST['file_id'] ?? ''); ?>">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">Subtitle (Optional)</label>
                         <input type="text" name="subtitle"
-                               class="input-field w-full"
-                               value="<?php echo htmlspecialchars($_POST['subtitle'] ?? ''); ?>">
+                            class="input-field w-full"
+                            value="<?php echo htmlspecialchars($_POST['subtitle'] ?? ''); ?>">
                     </div>
 
                     <button type="submit" class="btn-primary w-full">
@@ -399,13 +408,13 @@ require_once 'header.php';
             <div class="card">
                 <div class="flex flex-col lg:flex-row justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold text-white mb-4 lg:mb-0"><?php echo $userRole === 'admin' ? 'All Videos' : 'Your Videos'; ?></h2>
-                    
+
                     <!-- Search Form -->
                     <form method="GET" class="flex flex-col lg:flex-row lg:items-center">
-                        <input type="text" name="search" 
-                               class="input-field w-full lg:w-64"
-                               placeholder="Search videos..."
-                               value="<?php echo htmlspecialchars($search); ?>">
+                        <input type="text" name="search"
+                            class="input-field w-full lg:w-64"
+                            placeholder="Search videos..."
+                            value="<?php echo htmlspecialchars($search); ?>">
                         <button type="submit" class="btn-primary lg:ml-2 mt-4 lg:mt-0">
                             Search
                         </button>
@@ -413,41 +422,48 @@ require_once 'header.php';
                 </div>
 
                 <?php if (empty($videos)): ?>
-                <div class="text-center py-8">
-                    <p class="text-gray-400">
-                        <?php echo empty($search) ? ($userRole === 'admin' ? 'No videos added yet.' : 'No videos added yet.') : 'No videos found matching your search.'; ?>
-                    </p>
-                </div>
+                    <div class="text-center py-8">
+                        <p class="text-gray-400">
+                            <?php echo empty($search) ? ($userRole === 'admin' ? 'No videos added yet.' : 'No videos added yet.') : 'No videos found matching your search.'; ?>
+                        </p>
+                    </div>
                 <?php else: ?>
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="text-left border-b border-gray-700">
-                                <th class="pb-3 text-gray-400 font-medium">Title</th>
-                                <th class="pb-3 text-gray-400 font-medium">File ID</th>
-                                <th class="pb-3 text-gray-400 font-medium">Subtitle</th>
-                                <th class="pb-3 text-gray-400 font-medium">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($videos as $video): ?>
-                            <tr class="border-b border-gray-800 hover:bg-gray-800/50">
-                                <td class="py-4 text-white">
-                                    <?php echo htmlspecialchars($video['title']); ?>
-                                </td>
-                                <td class="py-4 text-gray-300">
-                                    <?php echo htmlspecialchars($video['file_id']); ?>
-                                </td>
-                                <td class="py-4 text-gray-300">
-                                    <?php echo htmlspecialchars($video['subtitle'] ?: '-'); ?>
-                                </td>
-                                <td class="py-4 flex gap-2">
-                                    <span class="icon-btn" onclick="copyVideoUrl('<?php echo htmlspecialchars($video['slug']); ?>')" title="Copy URL">
-                                        <i class="fa-duotone fa-thin fa-link icon-copy"></i>
-                                    </span>
-                                    <a href="/edit?id=<?php echo $video['id']; ?>" class="icon-btn" title="Edit Video">
-                                        <i class="fa-duotone fa-thin fa-pen-to-square icon-copy"></i>
-                                    </a>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <?php foreach ($videos as $video): ?>
+                            <div class="bg-gray-800/40 rounded-xl overflow-hidden shadow-lg hover:shadow-glow transition-all duration-300 hover:-translate-y-1 border border-gray-700/30 h-[200px] flex flex-col">
+                                <!-- Video Details -->
+                                <div class="p-5 flex-grow">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-lg font-semibold text-white truncate">
+                                            <a href="/<?php echo htmlspecialchars($video['slug']); ?>" class="hover:text-primary transition-colors">
+                                                <?php echo htmlspecialchars($video['title']); ?>
+                                            </a>
+                                        </h3>
+                                        <a href="/<?php echo htmlspecialchars($video['slug']); ?>" class="bg-primary/80 hover:bg-primary text-white p-2 rounded-full transition-all duration-200 flex-shrink-0">
+                                            <div class="w-6 h-6 flex items-center justify-center">
+                                                <i class="fa-duotone fa-thin fa-play text-sm"></i>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="flex items-center text-xs text-gray-400 mb-3">
+                                        <i class="fa-duotone fa-thin fa-file-video mr-1"></i>
+                                        <span><?php echo htmlspecialchars($video['file_id']); ?></span>
+                                    </div>
+                                    <p class="text-gray-400 text-sm line-clamp-2">
+                                        <?php echo htmlspecialchars($video['subtitle'] ?: 'No subtitle'); ?>
+                                    </p>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="border-t border-gray-700/50 p-3 flex justify-between bg-gray-800/50 mt-auto">
+                                    <div class="flex space-x-2">
+                                        <span class="icon-btn" onclick="copyVideoUrl('<?php echo htmlspecialchars($video['slug']); ?>')" title="Copy URL">
+                                            <i class="fa-duotone fa-thin fa-link icon-copy"></i>
+                                        </span>
+                                        <a href="/edit?id=<?php echo $video['id']; ?>" class="icon-btn" title="Edit Video">
+                                            <i class="fa-duotone fa-thin fa-pen-to-square icon-copy"></i>
+                                        </a>
+                                    </div>
                                     <form method="POST" action="/dashboard" class="inline" onsubmit="return confirm('Are you sure you want to delete this video?');">
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="id" value="<?php echo $video['id']; ?>">
@@ -455,80 +471,93 @@ require_once 'header.php';
                                             <i class="fa-duotone fa-thin fa-trash icon-delete"></i>
                                         </button>
                                     </form>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
 
                 <!-- Pagination -->
                 <?php if ($total_pages > 1): ?>
-                <div class="mt-6">
-                    <div class="flex justify-center space-x-1">
-                        <?php if ($page > 1): ?>
-                            <a href="/dashboard?page=1<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
-                               class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700">
-                                First
-                            </a>
-                            <a href="/dashboard?page=<?php echo ($page - 1); ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
-                               class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700">
-                                Previous
-                            </a>
-                        <?php endif; ?>
+                    <div class="mt-6">
+                        <div class="flex justify-center space-x-1">
+                            <?php if ($page > 1): ?>
+                                <a href="/dashboard?page=1<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>"
+                                    class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700">
+                                    First
+                                </a>
+                                <a href="/dashboard?page=<?php echo $page - 1; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>"
+                                    class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700">
+                                    Previous
+                                </a>
+                            <?php endif; ?>
 
-                        <?php
-                        $start = max(1, min($page - 2, $total_pages - 4));
-                        $end = min($total_pages, max($page + 2, 5));
-                        
-                        for ($i = $start; $i <= $end; $i++):
-                        ?>
-                            <a href="/dashboard?page=<?php echo $i; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
-                               class="px-4 py-2 text-sm font-medium <?php echo $i === $page ? 'text-blue-400 bg-gray-900' : 'text-white bg-gray-800 hover:bg-gray-700'; ?> rounded-md">
-                                <?php echo $i; ?>
-                            </a>
-                        <?php endfor; ?>
+                            <?php
+                            $start_page = max(1, $page - 2);
+                            $end_page = min($total_pages, $start_page + 4);
+                            if ($end_page - $start_page < 4 && $start_page > 1) {
+                                $start_page = max(1, $end_page - 4);
+                            }
+                            ?>
 
-                        <?php if ($page < $total_pages): ?>
-                            <a href="/dashboard?page=<?php echo ($page + 1); ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
-                               class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700">
-                                Next
-                            </a>
-                            <a href="/dashboard?page=<?php echo $total_pages; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
-                               class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700">
-                                Last
-                            </a>
-                        <?php endif; ?>
+                            <?php for ($i = $start_page; $i <= $end_page; $i++): ?>
+                                <a href="/dashboard?page=<?php echo $i; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>"
+                                    class="px-4 py-2 text-sm font-medium <?php echo $i === $page ? 'bg-primary text-white' : 'text-white bg-gray-800 hover:bg-gray-700'; ?> rounded-md">
+                                    <?php echo $i; ?>
+                                </a>
+                            <?php endfor; ?>
+
+                            <?php if ($page < $total_pages): ?>
+                                <a href="/dashboard?page=<?php echo $page + 1; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>"
+                                    class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700">
+                                    Next
+                                </a>
+                                <a href="/dashboard?page=<?php echo $total_pages; ?><?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>"
+                                    class="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700">
+                                    Last
+                                </a>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                    <div class="text-center mt-4 text-sm text-gray-400">
-                        Page <?php echo $page; ?> of <?php echo $total_pages; ?> 
-                        (<?php echo $total_videos; ?> total videos)
-                    </div>
-                </div>
-                <?php endif; ?>
                 <?php endif; ?>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Copy URL Success Message -->
-<div id="copySuccess" class="fixed top-8 right-4 bg-green-900/90 text-green-200 px-4 py-2 rounded-lg shadow-lg transform transition-opacity duration-300 opacity-0">
-    URL copied to clipboard!
-</div>
-
-<!-- Add JavaScript for copy functionality -->
+<!-- JavaScript for Video Card Grid -->
 <script>
-function copyVideoUrl(slug) {
-    const url = `${window.location.origin}/${slug}`;
-    navigator.clipboard.writeText(url).then(() => {
-        const copySuccess = document.getElementById('copySuccess');
-        copySuccess.style.opacity = '1';
+    function copyVideoUrl(slug) {
+        const baseUrl = window.location.origin;
+        const videoUrl = `${baseUrl}/${slug}`;
+
+        // Create temporary input element
+        const tempInput = document.createElement('input');
+        tempInput.style.position = 'absolute';
+        tempInput.style.left = '-1000px';
+        tempInput.value = videoUrl;
+        document.body.appendChild(tempInput);
+
+        // Copy the text
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+
+        // Show feedback
+        const notification = document.createElement('div');
+        notification.textContent = 'URL copied to clipboard';
+        notification.className = 'fixed bottom-4 right-4 bg-primary text-white py-2 px-4 rounded-lg shadow-lg transform transition-all duration-300';
+        document.body.appendChild(notification);
+
+        // Remove notification after delay
         setTimeout(() => {
-            copySuccess.style.opacity = '0';
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
         }, 2000);
-    });
-}
+    }
 </script>
 
 <?php require_once 'footer.php'; ?>
