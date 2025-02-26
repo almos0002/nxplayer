@@ -9,15 +9,33 @@ $favicon_url = 'https://i.postimg.cc/8NQsW-CMc/play.png?dl=1';  // Default value
 // Initialize user role
 $userRole = isset($_SESSION['role']) ? $_SESSION['role'] : 'user';
 
-if (isLoggedIn() && isset($_SESSION['user_id'])) {
+// First try to get admin settings
+try {
+    $stmt = $db->prepare("SELECT u.id, ss.* FROM users u 
+                         LEFT JOIN site_settings ss ON u.id = ss.user_id 
+                         WHERE u.role = 'admin' 
+                         ORDER BY ss.id DESC LIMIT 1");
+    $stmt->execute();
+    $site_settings = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($site_settings) {
+        $site_title = $site_settings['site_title'];
+        $favicon_url = $site_settings['favicon_url'] ?: '/favicon.ico';
+    }
+} catch (PDOException $e) {
+    // Silently fail, use defaults
+}
+
+// If logged in user is admin, override with their settings
+if (isLoggedIn() && isset($_SESSION['user_id']) && $userRole === 'admin') {
     try {
         $stmt = $db->prepare("SELECT * FROM site_settings WHERE user_id = ? ORDER BY id DESC LIMIT 1");
         $stmt->execute([$_SESSION['user_id']]);
-        $site_settings = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user_settings = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        if ($site_settings) {
-            $site_title = $site_settings['site_title'];
-            $favicon_url = $site_settings['favicon_url'] ?: '/favicon.ico';
+        if ($user_settings) {
+            $site_title = $user_settings['site_title'];
+            $favicon_url = $user_settings['favicon_url'] ?: '/favicon.ico';
         }
     } catch (PDOException $e) {
         // Silently fail, use defaults
