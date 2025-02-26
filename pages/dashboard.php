@@ -445,10 +445,6 @@ require_once 'header.php';
                                             </div>
                                         </a>
                                     </div>
-                                    <div class="flex items-center text-xs text-gray-400 mb-3">
-                                        <i class="fa-duotone fa-thin fa-file-video mr-1"></i>
-                                        <span><?php echo htmlspecialchars($video['file_id']); ?></span>
-                                    </div>
                                     <p class="text-gray-400 text-sm line-clamp-2">
                                         <?php echo htmlspecialchars($video['subtitle'] ?: 'No subtitle'); ?>
                                     </p>
