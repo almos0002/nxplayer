@@ -6,6 +6,9 @@ $site_settings = null;
 $site_title = 'Video Platform'; // Default value
 $favicon_url = 'https://i.postimg.cc/8NQsW-CMc/play.png?dl=1';  // Default value
 
+// Initialize user role
+$userRole = isset($_SESSION['role']) ? $_SESSION['role'] : 'user';
+
 if (isLoggedIn() && isset($_SESSION['user_id'])) {
     try {
         $stmt = $db->prepare("SELECT * FROM site_settings WHERE user_id = ? ORDER BY id DESC LIMIT 1");

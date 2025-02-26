@@ -30,7 +30,7 @@ try {
     $stmt = $db->prepare("
         SELECT v.*, vs.ad_url, vs.domains 
         FROM videos v 
-        LEFT JOIN video_settings vs ON 1=1 
+        LEFT JOIN video_settings vs ON v.user_id = vs.user_id 
         WHERE v.slug = ?
         LIMIT 1
     ");
@@ -42,9 +42,9 @@ try {
         die(json_encode(['status' => 'error', 'message' => 'Video not found']));
     }
 
-    // Get the latest video settings
-    $stmt = $db->prepare("SELECT * FROM video_settings ORDER BY id DESC LIMIT 1");
-    $stmt->execute();
+    // Get the video settings for this video's creator/owner
+    $stmt = $db->prepare("SELECT * FROM video_settings WHERE user_id = ? ORDER BY id DESC LIMIT 1");
+    $stmt->execute([$video['user_id']]);
     $settings = $stmt->fetch(PDO::FETCH_ASSOC);
 
     $response = [

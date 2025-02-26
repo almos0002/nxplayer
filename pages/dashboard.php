@@ -17,8 +17,19 @@ $search = $_GET['search'] ?? '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action']) && $_POST['action'] === 'delete' && isset($_POST['id'])) {
         try {
-            $stmt = $db->prepare("DELETE FROM videos WHERE id = ? AND user_id = ?");
-            $stmt->execute([$_POST['id'], $_SESSION['user_id']]);
+            // Check if user is admin
+            $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+            
+            if ($isAdmin) {
+                // Admins can delete any video
+                $stmt = $db->prepare("DELETE FROM videos WHERE id = ?");
+                $stmt->execute([$_POST['id']]);
+            } else {
+                // Regular users can only delete their own videos
+                $stmt = $db->prepare("DELETE FROM videos WHERE id = ? AND user_id = ?");
+                $stmt->execute([$_POST['id'], $_SESSION['user_id']]);
+            }
+            
             $_SESSION['flash_message'] = ['type' => 'success', 'text' => 'Video deleted successfully'];
             header('Location: /dashboard');
             exit;

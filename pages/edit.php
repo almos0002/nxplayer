@@ -32,9 +32,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Generate a slug from the title
         $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title)));
         
-        // Update existing video
-        $stmt = $db->prepare("UPDATE videos SET title = ?, subtitle = ?, file_id = ?, slug = ? WHERE id = ? AND user_id = ?");
-        $stmt->execute([$title, $subtitle, $file_id, $slug, $videoId, $_SESSION['user_id']]);
+        // Check if user is admin
+        $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+        
+        // Update existing video - admins can edit any video, regular users only their own
+        if ($isAdmin) {
+            $stmt = $db->prepare("UPDATE videos SET title = ?, subtitle = ?, file_id = ?, slug = ? WHERE id = ?");
+            $stmt->execute([$title, $subtitle, $file_id, $slug, $videoId]);
+        } else {
+            $stmt = $db->prepare("UPDATE videos SET title = ?, subtitle = ?, file_id = ?, slug = ? WHERE id = ? AND user_id = ?");
+            $stmt->execute([$title, $subtitle, $file_id, $slug, $videoId, $_SESSION['user_id']]);
+        }
         
         if ($stmt->rowCount() > 0) {
             $_SESSION['flash_message'] = ['type' => 'success', 'text' => 'Video updated successfully'];
@@ -46,9 +54,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get video data
-$stmt = $db->prepare("SELECT * FROM videos WHERE id = ? AND user_id = ?");
-$stmt->execute([$videoId, $_SESSION['user_id']]);
+// Check if user is admin
+$isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+
+// Get video data - admins can view any video, regular users only their own
+if ($isAdmin) {
+    $stmt = $db->prepare("SELECT * FROM videos WHERE id = ?");
+    $stmt->execute([$videoId]);
+} else {
+    $stmt = $db->prepare("SELECT * FROM videos WHERE id = ? AND user_id = ?");
+    $stmt->execute([$videoId, $_SESSION['user_id']]);
+}
+
 $video = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$video) {

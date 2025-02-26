@@ -34,6 +34,7 @@ if (!isLoggedIn() && isset($_COOKIE['remember_token']) && isset($_COOKIE['rememb
             if ($user) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
+                $_SESSION['role'] = $user['role']; // Store user role in session
                 header("Location: /dashboard");
                 exit;
             }
@@ -61,13 +62,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "All fields are required";
     } else {
         try {
-            $stmt = $db->prepare("SELECT id, username, password FROM users WHERE username = ?");
+            $stmt = $db->prepare("SELECT id, username, password, role FROM users WHERE username = ?");
             $stmt->execute([$username]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($user && password_verify($password, $user['password'])) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
+                $_SESSION['role'] = $user['role']; // Store user role in session
                 
                 // Handle remember me
                 if ($rememberMe) {
