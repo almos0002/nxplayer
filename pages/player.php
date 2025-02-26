@@ -1,4 +1,7 @@
 <?php
+// Get video data from the router
+// $video variable should be available from the router in index.php
+
 // Get site settings
 $site_settings = null;
 try {
@@ -13,11 +16,14 @@ try {
 
 $site_title = $site_settings['site_title'] ?? 'Video Platform';
 $favicon_url = $site_settings['favicon_url'] ?? '/favicon.ico';
+
+// Get video title for the page title
+$video_title = $video['title'] ?? 'Video Player';
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Video Player - <?php echo htmlspecialchars($site_title); ?></title>
+    <title><?php echo htmlspecialchars($video_title); ?> - <?php echo htmlspecialchars($site_title); ?></title>
     <?php if (!empty($favicon_url)): ?>
     <link rel="icon" type="image/x-icon" href="<?php echo htmlspecialchars($favicon_url); ?>">
     <?php endif; ?>
