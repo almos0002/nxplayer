@@ -1,5 +1,6 @@
 <?php
-session_start();
+// Include session manager for enhanced security
+require_once 'session_manager.php';
 
 // Database configuration
 $db_host = 'localhost';
@@ -136,6 +137,21 @@ function isLoggedIn() {
         return false;
     }
     
+    // Check if session has expired (only for non-remember-me sessions)
+    if (isset($_SESSION['remember_me']) && $_SESSION['remember_me'] === false) {
+        // Check if session has been inactive for more than 12 hours
+        $session_lifetime = 12 * 3600; // 12 hours in seconds
+        if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $session_lifetime)) {
+            // Session expired, destroy it
+            session_unset();
+            session_destroy();
+            return false;
+        }
+    }
+    
+    // Update the last activity time
+    $_SESSION['last_activity'] = time();
+    
     global $db;
     $stmt = $db->prepare("SELECT id FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
@@ -144,7 +160,18 @@ function isLoggedIn() {
 
 function requireLogin() {
     if (!isLoggedIn()) {
-        header('Location: /login.php');
+        // Check if the session existed but was expired (based on last_activity)
+        if (isset($_SESSION['user_id']) && isset($_SESSION['last_activity'])) {
+            // Clear any remaining session
+            session_unset();
+            session_destroy();
+            
+            // Redirect with session expired parameter
+            header('Location: /login.php?expired=1');
+        } else {
+            // Regular not logged in
+            header('Location: /login.php');
+        }
         exit;
     }
 }

@@ -35,6 +35,8 @@ if (!isLoggedIn() && isset($_COOKIE['remember_token']) && isset($_COOKIE['rememb
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['role'] = $user['role']; // Store user role in session
+                $_SESSION['last_activity'] = time(); // For session timeout tracking
+                $_SESSION['remember_me'] = true; // Flag this as a remember-me session
                 header("Location: /dashboard");
                 exit;
             }
@@ -53,6 +55,11 @@ if (isLoggedIn()) {
 
 $error = null;
 
+// Check for session expiration
+if (isset($_GET['expired']) && $_GET['expired'] == 1) {
+    $error = "Your session has expired. Please log in again.";
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
@@ -70,9 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['role'] = $user['role']; // Store user role in session
+                $_SESSION['last_activity'] = time(); // For session timeout tracking
                 
                 // Handle remember me
                 if ($rememberMe) {
+                    $_SESSION['remember_me'] = true; // Flag this as a remember-me session
                     $token = generateRememberToken();
                     $expires = date('Y-m-d H:i:s', strtotime('+30 days'));
                     
@@ -86,6 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     // Set cookies
                     setRememberMeCookie($user['id'], $token);
+                } else {
+                    $_SESSION['remember_me'] = false; // Regular session - will expire after inactivity
                 }
                 
                 header("Location: /dashboard");
