@@ -6,7 +6,7 @@ require_once 'session_manager.php';
 $db_host = 'localhost';
 $db_name = 'proxyplayer';
 $db_user = 'root';
-$db_pass = '';
+$db_pass = 'Newarz@22';
 
 try {
     $GLOBALS['db'] = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_pass);
@@ -123,12 +123,18 @@ try {
 }
 
 // Remove columns from videos table
-$sql = "ALTER TABLE videos DROP COLUMN IF EXISTS ad_url, DROP COLUMN IF EXISTS domains";
-
-try {
-    $db->exec($sql);
-} catch(PDOException $e) {
-    die("Column removal failed: " . $e->getMessage());
+$columns = ['ad_url', 'domains'];
+foreach ($columns as $column) {
+    try {
+        $db->exec("ALTER TABLE videos DROP COLUMN `$column`");
+    } catch (PDOException $e) {
+        // Ignore error if column does not exist (error code 1091)
+        $errorInfo = $e->errorInfo;
+        if (isset($errorInfo[1]) && $errorInfo[1] === 1091) {
+            continue;
+        }
+        die("Column removal failed: " . $e->getMessage());
+    }
 }
 
 // Helper functions
