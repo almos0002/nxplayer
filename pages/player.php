@@ -28,14 +28,15 @@ $video_title = $video['title'] ?? 'Video Player';
     <link rel="icon" type="image/x-icon" href="<?php echo htmlspecialchars($favicon_url); ?>">
     <?php endif; ?>
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; }
-        .player-container { width: 100%; height: 100vh; }
-        iframe { width: 100%; height: 100%; border: 0; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+        .player-container { width: 100%; height: 100vh; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: 0; overflow: hidden; scrollbar-width: none; -ms-overflow-style: none; }
+        iframe::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
     <div class="player-container">
-        <iframe id="gdPlayer" allowfullscreen></iframe>
+        <iframe id="gdPlayer" allowfullscreen scrolling="no"></iframe>
     </div>
 
     <script>
