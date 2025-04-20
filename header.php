@@ -183,7 +183,7 @@ if (isset($video) && $current_page === 'player') {
                 <?php if (!empty($favicon_url)): ?>
                     <img src="<?php echo htmlspecialchars($favicon_url); ?>" alt="" class="w-8 h-8 mr-2">
                 <?php endif; ?>
-                <?php echo htmlspecialchars($site_title); ?>
+                <?php echo htmlspecialchars($site_title ?? 'Video Platform'); ?>
             </a>
             
             <button class="md:hidden text-white text-2xl focus:outline-none" id="menu-toggle">
