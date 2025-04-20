@@ -82,7 +82,7 @@ unset($_SESSION['flash_message']);
     <div class="max-w-2xl mx-auto">
         <div class="mb-8">
             <div class="flex items-center justify-between">
-                <h1 class="text-3xl font-bold text-white">Edit User</h1>
+                <h1 class="text-3xl font-bold text-gray-800">Edit User</h1>
                 <a href="/users" class="btn-secondary">Back to Users</a>
             </div>
         </div>
@@ -108,7 +108,7 @@ unset($_SESSION['flash_message']);
         <div class="card">
             <form method="POST" class="space-y-6">
                 <div>
-                    <label for="username" class="block text-sm font-medium text-gray-300 mb-2">
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
                         Username
                     </label>
                     <input type="text" 
@@ -116,11 +116,12 @@ unset($_SESSION['flash_message']);
                            name="username" 
                            value="<?php echo htmlspecialchars($user['username']); ?>"
                            required
-                           class="input-field w-full">
+                           class="form-input w-full"
+                           style="padding-left: 0.5rem !important; padding-right: 0.5rem !important;">
                 </div>
 
                 <div>
-                    <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
                         Email
                     </label>
                     <input type="email" 
@@ -128,58 +129,63 @@ unset($_SESSION['flash_message']);
                            name="email" 
                            value="<?php echo htmlspecialchars($user['email']); ?>"
                            required
-                           class="input-field w-full">
+                           class="form-input w-full"
+                           style="padding-left: 0.5rem !important; padding-right: 0.5rem !important;">
                 </div>
 
                 <div>
-                    <label for="role" class="block text-sm font-medium text-gray-300 mb-2">
+                    <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
                         Role
                     </label>
                     <select id="role" 
                             name="role" 
-                            class="input-field w-full" 
+                            class="form-input w-full"
+                            style="padding-left: 0.5rem !important; padding-right: 0.5rem !important;"
                             <?php echo $user['id'] == 1 ? 'disabled' : ''; ?>>
                         <option value="user" <?php echo $user['role'] === 'user' ? 'selected' : ''; ?>>User</option>
                         <option value="admin" <?php echo $user['role'] === 'admin' ? 'selected' : ''; ?>>Admin</option>
                     </select>
                     <?php if ($user['id'] == 1): ?>
-                        <p class="mt-1 text-sm text-gray-400">The role of the first user cannot be changed</p>
+                        <p class="mt-1 text-sm text-gray-500">The role of the first user cannot be changed</p>
                     <?php endif; ?>
                 </div>
 
                 <div>
-                    <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
                         New Password
                     </label>
                     <input type="password" 
                            id="password" 
                            name="password" 
-                           class="input-field w-full"
+                           class="form-input w-full"
+                           style="padding-left: 0.5rem !important; padding-right: 0.5rem !important;"
                            placeholder="Leave blank to keep current password">
                 </div>
 
                 <div>
-                    <label for="ad_url" class="block text-sm font-medium text-gray-300 mb-2">
+                    <label for="ad_url" class="block text-sm font-medium text-gray-700 mb-2">
                         Advertisement URL
                     </label>
                     <input type="url" 
                            id="ad_url" 
                            name="ad_url" 
                            value="<?php echo htmlspecialchars($user['ad_url'] ?? ''); ?>"
-                           class="input-field w-full"
+                           class="form-input w-full"
+                           style="padding-left: 0.5rem !important; padding-right: 0.5rem !important;"
                            placeholder="https://example.com/ads">
                 </div>
 
                 <div>
-                    <label for="domains" class="block text-sm font-medium text-gray-300 mb-2">
+                    <label for="domains" class="block text-sm font-medium text-gray-700 mb-2">
                         Allowed Domains
                     </label>
                     <textarea id="domains" 
                               name="domains" 
                               rows="3" 
-                              class="input-field w-full"
+                              class="form-input w-full"
+                              style="padding-left: 0.5rem !important; padding-right: 0.5rem !important;"
                               placeholder="example.com&#10;subdomain.example.com"><?php echo htmlspecialchars($user['domains'] ?? ''); ?></textarea>
-                    <p class="mt-1 text-sm text-gray-400">Enter one domain per line</p>
+                    <p class="mt-1 text-sm text-gray-500">Enter one domain per line</p>
                 </div>
 
                 <div class="flex justify-end space-x-4">

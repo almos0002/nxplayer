@@ -85,7 +85,7 @@ unset($_SESSION['flash_message']);
     <div class="max-w-2xl mx-auto">
         <div class="mb-8">
             <div class="flex items-center justify-between">
-                <h1 class="text-3xl font-bold text-white">Edit Video</h1>
+                <h1 class="text-3xl font-bold text-gray-800">Edit Video</h1>
                 <a href="/dashboard" class="btn-secondary">Back to Dashboard</a>
             </div>
         </div>
@@ -121,7 +121,7 @@ unset($_SESSION['flash_message']);
         <div class="card">
             <form method="POST" class="space-y-6">
                 <div>
-                    <label for="title" class="block text-sm font-medium text-gray-300 mb-2">
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
                         Title
                     </label>
                     <input type="text" 
@@ -129,24 +129,26 @@ unset($_SESSION['flash_message']);
                            name="title" 
                            value="<?php echo htmlspecialchars($video['title']); ?>"
                            required
-                           class="input-field w-full"
+                           class="form-input w-full"
+                           style="padding-left: 0.5rem !important; padding-right: 0.5rem !important;"
                            placeholder="Enter video title">
                 </div>
 
                 <div>
-                    <label for="subtitle" class="block text-sm font-medium text-gray-300 mb-2">
+                    <label for="subtitle" class="block text-sm font-medium text-gray-700 mb-2">
                         Subtitle
                     </label>
                     <input type="text" 
                            id="subtitle" 
                            name="subtitle" 
                            value="<?php echo htmlspecialchars($video['subtitle'] ?? ''); ?>"
-                           class="input-field w-full"
+                           class="form-input w-full"
+                           style="padding-left: 0.5rem !important; padding-right: 0.5rem !important;"
                            placeholder="Enter video subtitle (optional)">
                 </div>
 
                 <div>
-                    <label for="file_id" class="block text-sm font-medium text-gray-300 mb-2">
+                    <label for="file_id" class="block text-sm font-medium text-gray-700 mb-2">
                         File ID
                     </label>
                     <input type="text" 
@@ -154,9 +156,10 @@ unset($_SESSION['flash_message']);
                            name="file_id" 
                            value="<?php echo htmlspecialchars($video['file_id']); ?>"
                            required
-                           class="input-field w-full"
+                           class="form-input w-full"
+                           style="padding-left: 0.5rem !important; padding-right: 0.5rem !important;"
                            placeholder="Enter video file ID">
-                    <p class="mt-1 text-sm text-gray-400">This is the unique identifier for your video file</p>
+                    <p class="mt-1 text-sm text-gray-500">This is the unique identifier for your video file</p>
                 </div>
 
                 <div class="flex justify-end space-x-4">

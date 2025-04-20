@@ -53,7 +53,7 @@ $total_pages = ceil($total_users / $limit);
 
 // Prepare the main query with pagination
 $query = "SELECT u.*, 
-          vs.ad_url, vs.domains,
+          MAX(vs.ad_url) as ad_url, MAX(vs.domains) as domains,
           COUNT(v.id) as video_count 
           FROM users u 
           LEFT JOIN video_settings vs ON u.id = vs.user_id 
@@ -88,7 +88,7 @@ unset($_SESSION['flash_message']);
 
 <div class="container mx-auto px-4 py-8">
     <div class="mb-8 flex justify-between items-center">
-        <h1 class="text-3xl font-bold text-white">Users</h1>
+        <h1 class="text-3xl font-bold text-gray-800">Users</h1>
         <a href="/add-user" class="btn-primary">Add</a>
     </div>
 
@@ -116,7 +116,7 @@ unset($_SESSION['flash_message']);
                    name="search" 
                    placeholder="Search by username or email" 
                    value="<?php echo htmlspecialchars($search); ?>"
-                   class="input-field sm:flex-1">
+                   class="form-input sm:flex-1">
             <div class="sm:flex sm:items-center sm:gap-4">
                 <button type="submit" class="btn-primary">Search</button>
                 <?php if (!empty($search)): ?>
@@ -131,32 +131,36 @@ unset($_SESSION['flash_message']);
             <table class="min-w-full table-auto">
                 <thead>
                     <tr class="border-b border-gray-700">
-                        <th class="px-4 py-2 text-left text-gray-300">ID</th>
-                        <th class="px-4 py-2 text-left text-gray-300">Username</th>
-                        <th class="px-4 py-2 text-left text-gray-300">Email</th>
-                        <th class="px-4 py-2 text-left text-gray-300">Role</th>
-                        <th class="px-4 py-2 text-left text-gray-300">Videos</th>
-                        <th class="px-4 py-2 text-left text-gray-300">Created At</th>
-                        <th class="px-4 py-2 text-right text-gray-300">Actions</th>
+                        <th class="px-4 py-3 text-left text-gray-600 font-medium text-sm">ID</th>
+                        <th class="px-4 py-3 text-left text-gray-600 font-medium text-sm">Username</th>
+                        <th class="px-4 py-3 text-left text-gray-600 font-medium text-sm">Email</th>
+                        <th class="px-4 py-3 text-left text-gray-600 font-medium text-sm">Role</th>
+                        <th class="px-4 py-3 text-left text-gray-600 font-medium text-sm">Videos</th>
+                        <th class="px-4 py-3 text-left text-gray-600 font-medium text-sm">Created At</th>
+                        <th class="px-4 py-3 text-right text-gray-600 font-medium text-sm">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($users as $user): ?>
-                        <tr class="border-b border-gray-700 hover:bg-gray-800/50">
-                            <td class="px-4 py-2 text-gray-300"><?php echo htmlspecialchars($user['id']); ?></td>
-                            <td class="px-4 py-2 text-gray-300"><?php echo htmlspecialchars($user['username']); ?></td>
-                            <td class="px-4 py-2 text-gray-300"><?php echo htmlspecialchars($user['email']); ?></td>
-                            <td class="px-4 py-2 text-gray-300"><?php echo htmlspecialchars($user['role']); ?></td>
-                            <td class="px-4 py-2 text-gray-300"><?php echo htmlspecialchars($user['video_count']); ?></td>
-                            <td class="px-4 py-2 text-gray-300"><?php echo date('Y-m-d H:i', strtotime($user['created_at'])); ?></td>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="px-4 py-3 text-gray-700"><?php echo htmlspecialchars($user['id']); ?></td>
+                            <td class="px-4 py-3 text-gray-700"><?php echo htmlspecialchars($user['username']); ?></td>
+                            <td class="px-4 py-3 text-gray-700"><?php echo htmlspecialchars($user['email']); ?></td>
+                            <td class="px-4 py-3 text-gray-700"><?php echo htmlspecialchars($user['role']); ?></td>
+                            <td class="px-4 py-3 text-gray-700"><?php echo htmlspecialchars($user['video_count']); ?></td>
+                            <td class="px-4 py-3 text-gray-700"><?php echo date('Y-m-d H:i', strtotime($user['created_at'])); ?></td>
                             <td class="px-4 py-2 text-right">
                                 <div class="flex justify-end space-x-2">
                                     <a href="/user-edit?id=<?php echo $user['id']; ?>" 
-                                       class="btn-secondary btn-sm">Edit</a>
+                                       class="icon-btn" title="Edit user">
+                                        <i class="fa-duotone fa-thin fa-pen-to-square text-xs"></i>
+                                    </a>
                                     <?php if ($user['id'] != 1): ?>
                                         <form method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this user?');">
                                             <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
-                                            <button type="submit" name="delete_user" class="btn-danger btn-sm">Delete</button>
+                                            <button type="submit" name="delete_user" class="icon-btn" title="Delete user">
+                                                <i class="fa-duotone fa-thin fa-trash icon-delete text-xs"></i>
+                                            </button>
                                         </form>
                                     <?php endif; ?>
                                 </div>

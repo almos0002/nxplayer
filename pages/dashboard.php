@@ -233,136 +233,139 @@ require_once 'header.php';
 <?php endif; ?>
 
 <div class="container mx-auto px-4 py-8">
-    <div class="mb-8">
-        <span class="text-gray-300">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
+    <div class="mb-10">
+        <div class="flex items-center mb-2">
+            <span class="text-gray-500 text-sm">Welcome back,</span>
+            <span class="text-primary font-medium text-sm ml-1"><?php echo htmlspecialchars($_SESSION['username']); ?></span>
+        </div>
         <div class="flex items-center justify-between">
-            <h1 class="text-3xl font-bold text-white">Dashboard</h1>
+            <h1 class="page-title">Dashboard</h1>
         </div>
     </div>
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         <?php if ($userRole === 'admin'): ?>
             <!-- Admin Statistics -->
-            <div class="card bg-gradient-to-br from-blue-600/50 to-blue-800/50 border border-blue-500/20">
+            <div class="stat-card group hover-lift">
                 <div class="flex items-center">
-                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-blue-500/20 mr-4 ring-2 ring-blue-500/40">
-                        <i class="fa-duotone fa-thin fa-users text-2xl text-blue-400"></i>
+                    <div class="stat-icon bg-teal-600 group-hover:bg-teal-700">
+                        <i class="fa-duotone fa-thin fa-users"></i>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-300">Total Users</p>
-                        <p class="text-2xl font-bold text-white"><?php echo number_format($total_users); ?></p>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-500 font-medium">Total Users</p>
+                        <h3 class="text-2xl font-bold text-gray-800"><?php echo $total_users; ?></h3>
                     </div>
                 </div>
-                <div class="mt-4 text-sm text-gray-400">
-                    <span class="text-green-400">+<?php echo $new_users_week; ?></span> new this week
+                <div class="mt-4 text-sm text-gray-500">
+                    <span class="text-teal-600 font-medium">+<?php echo $new_users_week; ?></span> new this week
                 </div>
             </div>
 
-            <div class="card bg-gradient-to-br from-purple-600/50 to-purple-800/50 border border-purple-500/20">
+            <div class="stat-card group hover-lift">
                 <div class="flex items-center">
-                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-purple-500/20 mr-4 ring-2 ring-purple-500/40">
-                        <i class="fa-duotone fa-thin fa-film text-2xl text-purple-400"></i>
+                    <div class="stat-icon bg-pink-500 group-hover:bg-pink-600">
+                        <i class="fa-duotone fa-thin fa-film"></i>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-300">Total Videos</p>
-                        <p class="text-2xl font-bold text-white"><?php echo number_format($total_videos); ?></p>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-500 font-medium">Total Videos</p>
+                        <h3 class="text-2xl font-bold text-gray-800"><?php echo number_format($total_videos); ?></h3>
                     </div>
                 </div>
-                <div class="mt-4 text-sm text-gray-400">
-                    <span class="text-green-400">+<?php echo $videos_last_24h; ?></span> in last 24h
+                <div class="mt-4 text-sm text-gray-500">
+                    <span class="text-pink-500 font-medium">+<?php echo $videos_last_24h; ?></span> in last 24h
                 </div>
             </div>
 
-            <div class="card bg-gradient-to-br from-green-600/50 to-green-800/50 border border-green-500/20">
+            <div class="stat-card group hover-lift">
                 <div class="flex items-center">
-                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-green-500/20 mr-4 ring-2 ring-green-500/40">
-                        <i class="fa-duotone fa-thin fa-users text-2xl text-green-400"></i>
+                    <div class="stat-icon bg-indigo-500 group-hover:bg-indigo-600">
+                        <i class="fa-duotone fa-thin fa-users"></i>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-300">Videos per User</p>
-                        <p class="text-2xl font-bold text-white"><?php echo $total_users > 0 ? number_format($total_videos / $total_users, 1) : '0'; ?></p>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-500 font-medium">Videos per User</p>
+                        <h3 class="text-2xl font-bold text-gray-800"><?php echo $total_users > 0 ? number_format($total_videos / $total_users, 1) : '0'; ?></h3>
                     </div>
                 </div>
-                <div class="mt-4 text-sm text-gray-400">
+                <div class="mt-4 text-sm text-gray-500">
                     Average per user
                 </div>
             </div>
 
-            <div class="card bg-gradient-to-br from-red-600/50 to-red-800/50 border border-red-500/20">
+            <div class="stat-card group hover-lift">
                 <div class="flex items-center">
-                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-red-500/20 mr-4 ring-2 ring-red-500/40">
-                        <i class="fa-duotone fa-thin fa-clock text-2xl text-red-400"></i>
+                    <div class="stat-icon bg-amber-500 group-hover:bg-amber-600">
+                        <i class="fa-duotone fa-thin fa-clock"></i>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-300">Recent Activity</p>
-                        <p class="text-2xl font-bold text-white"><?php echo $videos_last_24h + $new_users_week; ?></p>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-500 font-medium">Recent Activity</p>
+                        <h3 class="text-2xl font-bold text-gray-800"><?php echo $videos_last_24h + $new_users_week; ?></h3>
                     </div>
                 </div>
-                <div class="mt-4 text-sm text-gray-400">
+                <div class="mt-4 text-sm text-gray-500">
                     New videos & users recently
                 </div>
             </div>
 
         <?php else: ?>
             <!-- User Statistics -->
-            <div class="card bg-gradient-to-br from-blue-600/50 to-blue-800/50 border border-blue-500/20">
+            <div class="stat-card group hover-lift">
                 <div class="flex items-center">
-                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-blue-500/20 mr-4 ring-2 ring-blue-500/40">
-                        <i class="fa-duotone fa-thin fa-film text-2xl text-blue-400"></i>
+                    <div class="stat-icon bg-teal-600 group-hover:bg-teal-700">
+                        <i class="fa-duotone fa-thin fa-film"></i>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-300">Your Videos</p>
-                        <p class="text-2xl font-bold text-white"><?php echo number_format($user_total_videos); ?></p>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-500 font-medium">Your Videos</p>
+                        <h3 class="text-2xl font-bold text-gray-800"><?php echo number_format($user_total_videos); ?></h3>
                     </div>
                 </div>
-                <div class="mt-4 text-sm text-gray-400">
+                <div class="mt-4 text-sm text-gray-500">
                     Total videos uploaded
                 </div>
             </div>
 
-            <div class="card bg-gradient-to-br from-purple-600/50 to-purple-800/50 border border-purple-500/20">
+            <div class="stat-card group hover-lift">
                 <div class="flex items-center">
-                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-purple-500/20 mr-4 ring-2 ring-purple-500/40">
-                        <i class="fa-duotone fa-thin fa-clock text-2xl text-purple-400"></i>
+                    <div class="stat-icon bg-pink-500 group-hover:bg-pink-600">
+                        <i class="fa-duotone fa-thin fa-clock"></i>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-300">Recent Uploads</p>
-                        <p class="text-2xl font-bold text-white"><?php echo number_format($user_videos_last_24h); ?></p>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-500 font-medium">Recent Uploads</p>
+                        <h3 class="text-2xl font-bold text-gray-800"><?php echo number_format($user_videos_last_24h); ?></h3>
                     </div>
                 </div>
-                <div class="mt-4 text-sm text-gray-400">
+                <div class="mt-4 text-sm text-gray-500">
                     Uploaded in last 24h
                 </div>
             </div>
 
-            <div class="card bg-gradient-to-br from-green-600/50 to-green-800/50 border border-green-500/20">
+            <div class="stat-card group hover-lift">
                 <div class="flex items-center">
-                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-green-500/20 mr-4 ring-2 ring-green-500/40">
-                        <i class="fa-duotone fa-thin fa-chart-bar text-2xl text-green-400"></i>
+                    <div class="stat-icon bg-indigo-500 group-hover:bg-indigo-600">
+                        <i class="fa-duotone fa-thin fa-chart-bar"></i>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-300">Weekly Activity</p>
-                        <p class="text-2xl font-bold text-white"><?php echo number_format($user_videos_last_week); ?></p>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-500 font-medium">Weekly Activity</p>
+                        <h3 class="text-2xl font-bold text-gray-800"><?php echo number_format($user_videos_last_week); ?></h3>
                     </div>
                 </div>
-                <div class="mt-4 text-sm text-gray-400">
+                <div class="mt-4 text-sm text-gray-500">
                     Videos this week
                 </div>
             </div>
 
-            <div class="card bg-gradient-to-br from-red-600/50 to-red-800/50 border border-red-500/20">
+            <div class="stat-card group hover-lift">
                 <div class="flex items-center">
-                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-red-500/20 mr-4 ring-2 ring-red-500/40">
-                        <i class="fa-duotone fa-thin fa-chart-line text-2xl text-red-400"></i>
+                    <div class="stat-icon bg-amber-500 group-hover:bg-amber-600">
+                        <i class="fa-duotone fa-thin fa-chart-line"></i>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-300">Upload Rate</p>
-                        <p class="text-2xl font-bold text-white"><?php echo number_format($user_videos_last_week / 7, 1); ?></p>
+                    <div class="ml-4">
+                        <p class="text-sm text-gray-500 font-medium">Growth Rate</p>
+                        <h3 class="text-2xl font-bold text-gray-800"><?php echo $user_growth_rate > 0 ? '+' . $user_growth_rate . '%' : $user_growth_rate . '%'; ?></h3>
                     </div>
                 </div>
-                <div class="mt-4 text-sm text-gray-400">
-                    Average uploads per day
+                <div class="mt-4 text-sm text-gray-500">
+                    Compared to last month
                 </div>
             </div>
         <?php endif; ?>
@@ -376,28 +379,47 @@ require_once 'header.php';
 
                 <form method="POST" action="/dashboard" class="space-y-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Title</label>
-                        <input type="text" name="title" required
-                            class="input-field w-full"
-                            value="<?php echo htmlspecialchars($_POST['title'] ?? ''); ?>">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <i class="fa-duotone fa-thin fa-heading text-gray-400 text-sm"></i>
+                            </div>
+                            <input type="text" name="title" required
+                                class="form-input w-full pl-10"
+                                placeholder="Enter video title"
+                                value="<?php echo htmlspecialchars($_POST['title'] ?? ''); ?>">
+                        </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">File ID</label>
-                        <input type="text" name="file_id" required
-                            class="input-field w-full"
-                            value="<?php echo htmlspecialchars($_POST['file_id'] ?? ''); ?>">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">File ID</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <i class="fa-duotone fa-thin fa-file-video text-gray-400 text-sm"></i>
+                            </div>
+                            <input type="text" name="file_id" required
+                                class="form-input w-full pl-10"
+                                placeholder="Enter file ID"
+                                value="<?php echo htmlspecialchars($_POST['file_id'] ?? ''); ?>">
+                        </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Subtitle (Optional)</label>
-                        <input type="text" name="subtitle"
-                            class="input-field w-full"
-                            value="<?php echo htmlspecialchars($_POST['subtitle'] ?? ''); ?>">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Subtitle (Optional)</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                <i class="fa-duotone fa-thin fa-closed-captioning text-gray-400 text-sm"></i>
+                            </div>
+                            <input type="text" name="subtitle"
+                                class="form-input w-full pl-10"
+                                placeholder="Enter subtitle (optional)"
+                                value="<?php echo htmlspecialchars($_POST['subtitle'] ?? ''); ?>">
+                        </div>
                     </div>
 
-                    <button type="submit" class="btn-primary w-full">
-                        Add Video
+                    <button type="submit" class="btn-primary w-full hover-lift flex items-center justify-center mt-2">
+                        <i class="fa-duotone fa-thin fa-plus mr-2"></i>
+                        <span>Add Video</span>
                     </button>
                 </form>
             </div>
@@ -407,65 +429,94 @@ require_once 'header.php';
         <div class="lg:col-span-2">
             <div class="card">
                 <div class="flex flex-col lg:flex-row justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-white mb-4 lg:mb-0"><?php echo $userRole === 'admin' ? 'All Videos' : 'Your Videos'; ?></h2>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 lg:mb-0"><?php echo $userRole === 'admin' ? 'All Videos' : 'Your Videos'; ?></h2>
 
                     <!-- Search Form -->
-                    <form method="GET" class="flex flex-col lg:flex-row lg:items-center">
-                        <input type="text" name="search"
-                            class="input-field w-full lg:w-64"
-                            placeholder="Search videos..."
-                            value="<?php echo htmlspecialchars($search); ?>">
-                        <button type="submit" class="btn-primary lg:ml-2 mt-4 lg:mt-0">
-                            Search
+                    <form method="GET" class="flex flex-col lg:flex-row lg:items-center w-full lg:w-auto">
+                        <div class="relative w-full lg:w-64">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fa-duotone fa-thin fa-search text-gray-400"></i>
+                            </div>
+                            <input type="text" name="search"
+                                class="form-input w-full pl-10 pr-10"
+                                placeholder="Search videos..."
+                                value="<?php echo htmlspecialchars($search); ?>">
+                            <?php if (!empty($search)): ?>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                <a href="/dashboard" class="text-gray-400 hover:text-gray-600">
+                                    <i class="fa-duotone fa-thin fa-times"></i>
+                                </a>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        <button type="submit" class="btn-primary lg:ml-2 mt-4 lg:mt-0 flex items-center justify-center">
+                            <i class="fa-duotone fa-thin fa-search mr-2"></i>Search
                         </button>
                     </form>
                 </div>
 
                 <?php if (empty($videos)): ?>
-                    <div class="text-center py-8">
-                        <p class="text-gray-400">
+                    <div class="text-center py-12">
+                        <div class="bg-gray-50 rounded-xl p-8 inline-block mb-4">
+                            <i class="fa-duotone fa-thin fa-video-slash text-4xl text-gray-300"></i>
+                        </div>
+                        <p class="text-gray-500 font-medium">
                             <?php echo empty($search) ? ($userRole === 'admin' ? 'No videos added yet.' : 'No videos added yet.') : 'No videos found matching your search.'; ?>
                         </p>
+                        <?php if (!empty($search)): ?>
+                            <a href="/dashboard" class="text-primary hover:text-teal-800 mt-2 inline-block">
+                                <i class="fa-duotone fa-thin fa-arrow-left mr-1"></i> Clear search
+                            </a>
+                        <?php endif; ?>
                     </div>
                 <?php else: ?>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <?php foreach ($videos as $video): ?>
-                            <div class="bg-gray-800/40 rounded-xl overflow-hidden shadow-lg hover:shadow-glow transition-all duration-300 hover:-translate-y-1 border border-gray-700/30 h-[200px] flex flex-col">
-                                <!-- Video Details -->
-                                <div class="p-5 flex-grow">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <h3 class="text-lg font-semibold text-white truncate">
-                                            <a href="/<?php echo htmlspecialchars($video['slug']); ?>" class="hover:text-primary transition-colors">
-                                                <?php echo htmlspecialchars($video['title']); ?>
-                                            </a>
-                                        </h3>
-                                        <a href="/<?php echo htmlspecialchars($video['slug']); ?>" class="bg-primary/80 hover:bg-primary text-white p-2 rounded-full transition-all duration-200 flex-shrink-0">
-                                            <div class="w-6 h-6 flex items-center justify-center">
-                                                <i class="fa-duotone fa-thin fa-play text-sm"></i>
-                                            </div>
-                                        </a>
+                            <div class="bg-white rounded-xl overflow-hidden shadow-card hover:shadow-elevated transition-all duration-300 hover:-translate-y-1 border border-gray-100 flex flex-col h-[220px]">
+                                <!-- Video Header -->
+                                <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-2">
+                                            <i class="fa-duotone fa-thin fa-film text-primary"></i>
+                                        </div>
+                                        <span class="text-xs font-medium text-gray-500">Video</span>
                                     </div>
-                                    <p class="text-gray-400 text-sm line-clamp-2">
-                                        <?php echo htmlspecialchars($video['subtitle'] ?: 'No subtitle'); ?>
-                                    </p>
-                                </div>
-
-                                <!-- Actions -->
-                                <div class="border-t border-gray-700/50 p-3 flex justify-between bg-gray-800/50 mt-auto">
                                     <div class="flex space-x-2">
-                                        <span class="icon-btn" onclick="copyVideoUrl('<?php echo htmlspecialchars($video['slug']); ?>')" title="Copy URL">
-                                            <i class="fa-duotone fa-thin fa-link icon-copy"></i>
+                                        <button class="icon-btn" onclick="copyVideoUrl('<?php echo htmlspecialchars($video['slug']); ?>')" title="Copy link">
+                                            <i class="fa-duotone fa-thin fa-copy icon-copy text-xs"></i>
+                                        </button>
+                                        <a href="/edit?id=<?php echo $video['id']; ?>" class="icon-btn" title="Edit video">
+                                            <i class="fa-duotone fa-thin fa-pen-to-square text-xs"></i>
+                                        </a>
+                                        <form method="POST" action="/dashboard" class="inline" onsubmit="return confirm('Are you sure you want to delete this video?');">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="id" value="<?php echo $video['id']; ?>">
+                                            <button type="submit" class="icon-btn" title="Delete video">
+                                                <i class="fa-duotone fa-thin fa-trash icon-delete text-xs"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                
+                                <!-- Video Details -->
+                                <div class="p-5 flex-grow flex flex-col justify-between">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">
+                                            <?php echo htmlspecialchars($video['title']); ?>
+                                        </h3>
+                                        <p class="text-gray-500 text-sm mb-3 line-clamp-2">
+                                            <?php echo !empty($video['subtitle']) ? htmlspecialchars($video['subtitle']) : '&nbsp;'; ?>
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="flex justify-between items-center mt-auto pt-2 border-t border-gray-50">
+                                        <span class="text-xs text-gray-400">
+                                            Added: <?php echo date('M j, Y', strtotime($video['created_at'])); ?>
                                         </span>
-                                        <a href="/edit?id=<?php echo $video['id']; ?>" class="icon-btn" title="Edit Video">
-                                            <i class="fa-duotone fa-thin fa-pen-to-square icon-copy"></i>
+                                        <a href="/<?php echo htmlspecialchars($video['slug']); ?>" class="text-primary hover:text-teal-800 text-sm font-medium flex items-center">
+                                            View <i class="fa-duotone fa-thin fa-arrow-right ml-1"></i>
                                         </a>
                                     </div>
-                                    <form method="POST" action="/dashboard" class="inline" onsubmit="return confirm('Are you sure you want to delete this video?');">
-                                        <input type="hidden" name="action" value="delete">
-                                        <input type="hidden" name="id" value="<?php echo $video['id']; ?>">
-                                        <button type="submit" class="icon-btn" title="Delete Video">
-                                            <i class="fa-duotone fa-thin fa-trash icon-delete"></i>
-                                        </button>
                                     </form>
                                 </div>
                             </div>

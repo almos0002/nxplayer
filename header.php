@@ -102,13 +102,25 @@ if (isset($video) && $current_page === 'player') {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#8B5CF6',
-                        secondary: '#111827',
-                        dark: '#030712',
-                        accent: '#4F46E5'
+                        primary: '#0F766E',   /* Teal-700 */
+                        secondary: '#E5E7EB', /* Gray-200 */
+                        dark: '#1F2937',     /* Gray-800 */
+                        accent: '#EC4899',    /* Pink-500 */
+                        neutral: '#F9FAFB',   /* Gray-50 */
+                        'surface': '#FFFFFF',
+                        'surface-hover': '#F3F4F6'
                     },
                     boxShadow: {
-                        'glow': '0 0 20px rgba(139, 92, 246, 0.15)',
+                        'subtle': '0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03)',
+                        'elevated': '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)',
+                        'card': '0 2px 4px rgba(0, 0, 0, 0.02), 0 1px 10px rgba(0, 0, 0, 0.03)'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    borderRadius: {
+                        'xl': '0.75rem',
+                        '2xl': '1rem'
                     }
                 }
             }
@@ -116,29 +128,49 @@ if (isset($video) && $current_page === 'player') {
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
+            /* Button Styles */
             .btn-primary {
-                @apply bg-primary hover:bg-violet-500 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md hover:shadow-glow transform hover:-translate-y-0.5 transition-all duration-200;
+                @apply bg-primary hover:bg-teal-800 text-white font-medium py-2.5 px-6 rounded-xl shadow-subtle hover:shadow-elevated transition-all duration-200;
             }
             .btn-secondary {
-                @apply bg-secondary hover:bg-gray-800 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md transform hover:-translate-y-0.5 transition-all duration-200;
+                @apply bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 font-medium py-2.5 px-6 rounded-xl shadow-subtle hover:shadow-elevated transition-all duration-200;
             }
             .btn-danger {
-                @apply bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md transform hover:-translate-y-0.5 transition-all duration-200 cursor-pointer;
+                @apply bg-red-500 hover:bg-red-600 text-white font-medium py-2.5 px-6 rounded-xl shadow-subtle hover:shadow-elevated transition-all duration-200;
             }
-            .input-field {
-                @apply bg-secondary/80 border border-gray-800 text-gray-100 rounded-xl px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 backdrop-blur-sm transition-all duration-200;
+            .btn-outline {
+                @apply border border-gray-200 hover:border-primary hover:text-primary text-gray-600 font-medium py-2.5 px-6 rounded-xl transition-all duration-200;
             }
-            .card {
-                @apply bg-secondary/95 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-gray-800/50 hover:shadow-glow transition-all duration-300;
-            }
+            
+            /* Navigation */
             .nav-link {
-                @apply text-gray-400 hover:text-white px-4 py-2 rounded-lg hover:bg-primary/10 transition-all duration-200;
+                @apply text-gray-600 hover:text-primary font-medium py-2 px-4 rounded-lg transition-all duration-200;
             }
-            .gradient-text {
-                @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-500 to-indigo-600;
+            
+            /* Form Elements */
+            .form-input {
+                @apply bg-white border border-gray-200 text-gray-700 rounded-xl px-8 py-3 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary shadow-sm transition-all duration-200 w-full;
+            }
+            
+            /* Card Components */
+            .card {
+                @apply bg-white border border-gray-100 rounded-xl p-6 shadow-card hover:shadow-elevated transition-all duration-300;
+            }
+            
+            /* Stat Cards */
+            .stat-card {
+                @apply bg-white border border-gray-100 rounded-xl p-6 shadow-card transition-all duration-300;
+            }
+            .stat-icon {
+                @apply w-12 h-12 flex items-center justify-center rounded-full text-white text-xl;
+            }
+            
+            /* Interactive Elements */
+            .hover-lift {
+                @apply hover:-translate-y-1 hover:shadow-elevated;
             }
             .icon-btn {
-                @apply p-2 rounded-lg hover:bg-gray-700/50 transition-all duration-200 cursor-pointer;
+                @apply p-1.5 rounded-full text-gray-500 border border-gray-200 hover:text-primary hover:bg-gray-100 transition-all duration-200 w-7 h-7 flex items-center justify-center;
             }
             .icon-copy {
                 @apply text-gray-400 hover:text-primary;
@@ -146,60 +178,115 @@ if (isset($video) && $current_page === 'player') {
             .icon-delete {
                 @apply text-gray-400 hover:text-red-500;
             }
+            
+            /* Text Utilities */
+            .line-clamp-2 {
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+            }
+            
+            /* Shadow Variations */
+            .shadow-elevated {
+                @apply shadow-lg;
+            }
+            .gradient-text {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-teal-600 to-teal-400;
+            }
+            .stat-card {
+                @apply bg-white border border-gray-100 rounded-xl p-5 shadow-card hover:shadow-elevated transition-all duration-300;
+            }
+            .stat-icon {
+                @apply p-3 rounded-xl text-white text-xl;
+            }
+            .icon-btn {
+                @apply p-2 rounded-lg hover:bg-gray-50 transition-all duration-200 cursor-pointer;
+            }
+            .icon-copy {
+                @apply text-gray-400 hover:text-primary;
+            }
+            .icon-delete {
+                @apply text-gray-400 hover:text-red-500;
+            }
+            .page-title {
+                @apply text-3xl font-bold text-gray-800 mb-6;
+            }
+            .section-title {
+                @apply text-xl font-semibold text-gray-700 mb-4;
+            }
+            .data-table {
+                @apply w-full border-collapse;
+            }
+            .data-table th {
+                @apply text-left py-3 px-4 bg-gray-50 text-gray-600 font-medium text-sm border-b border-gray-200;
+            }
+            .data-table td {
+                @apply py-3 px-4 border-b border-gray-100 text-gray-700;
+            }
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: theme('colors.dark');
+            background: theme('colors.gray.50');
         }
         ::-webkit-scrollbar-thumb {
-            background: theme('colors.primary');
-            border-radius: 4px;
+            background: theme('colors.gray.200');
+            border-radius: 3px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: theme('colors.accent');
+            background: theme('colors.primary');
         }
 
-        /* Dark theme specific styles */
+        /* Light theme specific styles */
         ::selection {
             background: theme('colors.primary');
             color: white;
+        }
+        
+        /* Global styles */
+        body {
+            @apply text-gray-700 bg-gray-50;
+        }
+        
+        /* Animation utilities */
+        .hover-lift {
+            @apply transition-transform duration-200 hover:-translate-y-1;
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.7.2/css/all.css">
 
 </head>
-<body class="bg-dark text-gray-200 min-h-screen font-['Inter'] antialiased selection:bg-primary selection:text-white">
+<body class="bg-gray-50 text-gray-700 min-h-screen font-sans antialiased selection:bg-primary selection:text-white">
     <?php if (isLoggedIn()): ?>
-        <nav class="bg-slate-900/95 border-b border-slate-800 fixed w-full z-10">
+        <nav class="bg-white border-b border-gray-100 shadow-subtle fixed w-full z-10 backdrop-blur-sm bg-white/95">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-            <a href="/dashboard" class="text-2xl font-bold text-white flex items-center">
+            <a href="/dashboard" class="text-2xl font-bold text-primary flex items-center">
                 <?php if (!empty($favicon_url)): ?>
                     <img src="<?php echo htmlspecialchars($favicon_url); ?>" alt="" class="w-8 h-8 mr-2">
                 <?php endif; ?>
                 <?php echo htmlspecialchars($site_title ?? 'Video Platform'); ?>
             </a>
             
-            <button class="md:hidden text-white text-2xl focus:outline-none" id="menu-toggle">
+            <button class="md:hidden text-gray-800 text-2xl focus:outline-none" id="menu-toggle">
                 <i class="fas fa-bars"></i>
             </button>
             
             <div class="hidden md:flex space-x-4" id="nav-menu">
-                <button type="button" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/dashboard') !== false ? 'text-white bg-primary/10' : ''; ?>" onclick="location.href='/dashboard'">
+                <button type="button" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/dashboard') !== false ? 'text-primary bg-teal-50 font-semibold' : 'text-gray-600 hover:text-primary'; ?>" onclick="location.href='/dashboard'">
                 <i class="fa-duotone fa-thin fa-grid-2 mr-2"></i>Dashboard
                 </button>
                 <?php if ($userRole === 'admin'): ?>
-                    <button type="button" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/users') !== false ? 'text-white bg-primary/10' : ''; ?>" onclick="location.href='/users'">
+                    <button type="button" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/users') !== false ? 'text-primary bg-teal-50 font-semibold' : 'text-gray-600 hover:text-primary'; ?>" onclick="location.href='/users'">
                         <i class="fa-duotone fa-thin fa-users mr-2"></i>Users
                     </button>
                 <?php endif; ?>
-                <button type="button" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/settings') !== false ? 'text-white bg-primary/10' : ''; ?>" onclick="location.href='/settings'">
+                <button type="button" class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/settings') !== false ? 'text-primary bg-teal-50 font-semibold' : 'text-gray-600 hover:text-primary'; ?>" onclick="location.href='/settings'">
                     <i class="fa-duotone fa-thin fa-gear mr-2"></i>Settings
                 </button>
                 <a href="/logout" class="btn-danger">
@@ -208,19 +295,19 @@ if (isset($video) && $current_page === 'player') {
             </div>
         </div>
         
-        <div class="md:hidden hidden flex flex-col space-y-2 mt-2 p-4 bg-slate-900/95 border-t border-slate-800" id="mobile-menu">
-            <a href="/dashboard" class="block py-2 px-4 text-white hover:bg-primary/10 <?php echo strpos($_SERVER['REQUEST_URI'], '/dashboard') !== false ? 'bg-primary/10' : ''; ?>">
+        <div class="md:hidden hidden flex flex-col space-y-2 mt-2 p-4 bg-white border-t border-gray-100 shadow-subtle backdrop-blur-sm bg-white/95" id="mobile-menu">
+            <a href="/dashboard" class="block py-2 px-4 text-gray-600 hover:bg-teal-50 hover:text-primary <?php echo strpos($_SERVER['REQUEST_URI'], '/dashboard') !== false ? 'bg-teal-50 text-primary font-medium' : ''; ?>">
                 <i class="fa-duotone fa-thin fa-dashboard mr-2"></i>Dashboard
             </a>
             <?php if ($userRole === 'admin'): ?>
-                <a href="/users" class="block py-2 px-4 text-white hover:bg-primary/10 <?php echo strpos($_SERVER['REQUEST_URI'], '/users') !== false ? 'bg-primary/10' : ''; ?>">
+                <a href="/users" class="block py-2 px-4 text-gray-600 hover:bg-teal-50 hover:text-primary <?php echo strpos($_SERVER['REQUEST_URI'], '/users') !== false ? 'bg-teal-50 text-primary font-medium' : ''; ?>">
                     <i class="fa-duotone fa-thin fa-users mr-2"></i>Users
                 </a>
             <?php endif; ?>
-            <a href="/settings" class="block py-2 px-4 text-white hover:bg-primary/10 <?php echo strpos($_SERVER['REQUEST_URI'], '/settings') !== false ? 'bg-primary/10' : ''; ?>">
+            <a href="/settings" class="block py-2 px-4 text-gray-600 hover:bg-teal-50 hover:text-primary <?php echo strpos($_SERVER['REQUEST_URI'], '/settings') !== false ? 'bg-teal-50 text-primary font-medium' : ''; ?>">
                 <i class="fa-duotone fa-thin fa-gear mr-2"></i>Settings
             </a>
-            <a href="/logout" class="block w-full text-left py-2 px-4 text-white hover:bg-red-700">
+            <a href="/logout" class="block w-full text-left py-2 px-4 text-gray-700 hover:bg-red-50 hover:text-red-600">
                 <i class="fa-duotone fa-thin fa-sign-out-alt mr-2"></i>Logout
             </a>
         </div>

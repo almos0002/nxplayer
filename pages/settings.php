@@ -86,7 +86,7 @@ unset($_SESSION['flash_message']);
     <div class="max-w-2xl mx-auto">
         <div class="mb-8">
             <div class="flex items-center justify-between">
-                <h1 class="text-3xl font-bold text-white">Settings</h1>
+                <h1 class="text-3xl font-bold text-gray-800">Settings</h1>
             </div>
         </div>
 
@@ -112,70 +112,75 @@ unset($_SESSION['flash_message']);
             <form method="POST" class="space-y-6">
                 <?php if ($userRole === 'admin'): ?>
                     <div class="mb-6">
-                        <h2 class="text-xl font-semibold text-white mb-4">Site Settings (Admin Only)</h2>
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Site Settings (Admin Only)</h2>
                         <div class="space-y-4">
                             <div>
-                                <label for="site_title" class="block text-sm font-medium text-gray-300 mb-2">
+                                <label for="site_title" class="block text-sm font-medium text-gray-700 mb-2">
                                     Site Title
                                 </label>
                                 <input type="text" 
                                        id="site_title" 
                                        name="site_title" 
-                                       class="input-field w-full"
+                                       class="form-input w-full"
+                                       style="padding-left: 0.5rem !important; padding-right: 0.5rem !important;"
+                                       placeholder="Enter site title"
                                        value="<?php echo htmlspecialchars($settings['site_title']); ?>">
-                                <p class="mt-1 text-sm text-gray-400">This will be displayed in the browser tab and header</p>
+                                <p class="mt-1 text-sm text-gray-500">This will be displayed in the browser tab and header</p>
                             </div>
 
                             <div>
-                                <label for="favicon_url" class="block text-sm font-medium text-gray-300 mb-2">
+                                <label for="favicon_url" class="block text-sm font-medium text-gray-700 mb-2">
                                     Favicon URL
                                 </label>
                                 <input type="url" 
                                        id="favicon_url" 
                                        name="favicon_url" 
-                                       class="input-field w-full"
+                                       class="form-input w-full"
+                                       style="padding-left: 0.5rem !important; padding-right: 0.5rem !important;"
                                        value="<?php echo htmlspecialchars($settings['favicon_url']); ?>"
                                        placeholder="https://example.com/favicon.ico">
                                 <?php if (!empty($settings['favicon_url'])): ?>
                                     <div class="mt-2 flex items-center space-x-2">
-                                        <span class="text-sm text-gray-400">Current favicon:</span>
+                                        <span class="text-sm text-gray-500">Current favicon:</span>
                                         <img src="<?php echo htmlspecialchars($settings['favicon_url']); ?>" 
                                              alt="Current favicon" 
                                              class="w-4 h-4">
                                     </div>
                                 <?php endif; ?>
-                                <p class="mt-1 text-sm text-gray-400">Enter the URL of your favicon (recommended size: 32x32 pixels)</p>
+                                <p class="mt-1 text-sm text-gray-500">Enter the URL of your favicon (recommended size: 32x32 pixels)</p>
                             </div>
                         </div>
                     </div>
                 <?php endif; ?>
 
                 <div>
-                    <h2 class="text-xl font-semibold text-white mb-4">User Settings</h2>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">User Settings</h2>
                     <div class="space-y-4">
                         <div>
-                            <label for="ad_url" class="block text-sm font-medium text-gray-300 mb-2">
+                            <label for="ad_url" class="block text-sm font-medium text-gray-700 mb-2">
                                 Advertisement URL
                             </label>
                             <input type="url" 
                                    id="ad_url" 
                                    name="ad_url" 
-                                   class="input-field w-full"
+                                   class="form-input w-full"
+                                   style="padding-left: 0.5rem !important; padding-right: 0.5rem !important;"
                                    value="<?php echo htmlspecialchars($userSettings['ad_url']); ?>"
                                    placeholder="https://example.com/ads">
-                            <p class="mt-1 text-sm text-gray-400">Enter the URL where your video advertisements are hosted</p>
+                            <p class="mt-1 text-sm text-gray-500">Enter the URL where your video advertisements are hosted</p>
                         </div>
 
                         <div>
-                            <label for="domains" class="block text-sm font-medium text-gray-300 mb-2">
+                            <label for="domains" class="block text-sm font-medium text-gray-700 mb-2">
                                 Allowed Domains
                             </label>
                             <textarea id="domains" 
                                       name="domains" 
                                       rows="3" 
-                                      class="input-field w-full"
+                                      class="form-input w-full"
+                                      style="padding-left: 0.5rem !important; padding-right: 0.5rem !important;"
                                       placeholder="example.com&#10;subdomain.example.com"><?php echo htmlspecialchars($userSettings['domains']); ?></textarea>
-                            <p class="mt-1 text-sm text-gray-400">Enter one domain per line. These domains will be allowed to embed your videos.</p>
+                            <p class="mt-1 text-sm text-gray-500">Enter one domain per line. These domains will be allowed to embed your videos.</p>
                         </div>
                     </div>
                 </div>
